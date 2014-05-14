@@ -1,7 +1,7 @@
 # Summary
 
 * [The Layer Tree](The Layer Tree)
-    * [Layers and Views](Layers and Views)
+    * [图层和视图](Layers and Views)
     * [Layer Capabilities](Layer Capabilities)
     * [Working with Layers](Working with Layers)
     * [Summary](Summary1)
