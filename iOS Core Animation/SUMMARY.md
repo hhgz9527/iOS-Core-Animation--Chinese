@@ -1,6 +1,6 @@
 # Summary
 
-* [The Layer Tree](The Layer Tree)
+* [图层树](The Layer Tree)
     * [图层和视图](Layers and Views)
     * [Layer Capabilities](Layer Capabilities)
     * [Working with Layers](Working with Layers)
