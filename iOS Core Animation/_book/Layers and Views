@@ -1,1 +1,9 @@
 # Layers and Views
+如果你创建过一个iOS或者Mac OS的应用程序，那么你应该非常熟悉*视图（view）*。视图是以一个矩形向我们呈现内容和获取用户在iOS设备上的触摸手势以及Mac OS系统上的鼠标点击。在视图中我们可以添加另外一个层次，给个视图负责子视图（*subview*）的位置。
+
+图1.1展示了一个十分典型的视图层
+
+![image](file://Users/gaoyu/Desktop/qipaname/Resoucre/1.1.png)
+
+
+
