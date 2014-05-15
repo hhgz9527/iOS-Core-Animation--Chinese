@@ -12,10 +12,22 @@
 
 ###CALayer
 
-CAlayer在概念上与UIView是十分相似的。
+CALayer在概念上与UIView是十分相似的。他们都是一个矩形容器，并且也有层级关系；他们都能呈现一些内容如图片，文本或者背景色；同样他们也能够管理子视图*（sublayers）*的位置。他们都拥有能够创建动画和改变形状的方法和属性。UIView和CALayer最大的区别就在于UIView负责用户交互而CALayer没有。
 
+因为在iOS中触摸事件的响应是通过UIView层来完成的，尽管CALayer也提供一些方法来判断点击的坐标是否在图层内，但CALayer是不能获取到响应事件的。*（更多内容请查看第三章 “几何图层”）*
 
+###平行层
 
+所有的UIView都有一个继承自CALayer的layer属性，它就是UIView的底层。视图是负责创建和管理图层的，并确保子视图从他们相应的底层连接形成的平行层*（图层树）*中添加和移除。
+
+图1.2为我们展示了平行层的结构
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.2.png)
+>左侧为图层树的结构，右侧为它的图层样式
+
+实际上，你在屏幕上看到的内容和动画效果都是由底层来完成的。UIView只是简单的将这些融合在一起了，拿iOS来举例，比如触摸和高级的交互工作，底层其实都是Core Animaiton来完成的。
+
+为什么iOS有UIView和CALayer两个平行层呢，而不是由其中一个来完成所有的事情？原因在于，我们需要保证其单一的职责和避免重复的代码所造成的烦恼。 iOS与Mac OS在事件处理和用户交互上的差异是十分大的，多点触摸和鼠标、键盘的操作在根本上就是不同的两个方面。这也就是为什么iOS有UIKit和UIView，Mac OS有AppKit和NSView。他们看着相似，但是在功能上差异很大。
 
 
 
