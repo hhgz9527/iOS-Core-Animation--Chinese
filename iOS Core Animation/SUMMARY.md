@@ -41,7 +41,7 @@
     * [CAEAGLLayer](CAEAGLLayer)
     * [AVPlayerLayer](AVPlayerLayer)
     * [Summary](Summary6)
-* [Implicit Animations](Implicit Animations)
+* [默认动画](Implicit Animations)
     * [Transactions](Transactions)
     * [Completion Blocks](Completion Blocks)
     * [Layer Actions](Layer Actions)

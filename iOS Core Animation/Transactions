@@ -1,2 +1,31 @@
 # Transactions
-71
+Core Animation假设所有你在屏幕上的操作都是(至少可能)需要动画的，动画除非你主动关闭，否则它一定会发生，默认就是执行的。
+
+无论何时你改变了CALayer的一个可能会导致动画的属性，这个改变都不会立即在屏幕上体现，相反，图层将会为旧的值到新的值的变化执行一个平滑动画。你不需要做任何事情就会发生，因为这是默认行为。
+
+你可能觉得幸福来的太突然了，让我们用一个例子来演示一下吧：我们使用第一章，“图层树”那个蓝色正方形工程，为它添加一个可以将图层设置随机颜色的按钮。代码如清单7.1所示。点击按钮，你将看到颜色平滑的改变了，而不是立即变成新的颜色(图片7.1)
+
+>清单7.1 随机设置图层的颜色
+
+    @interface ViewController ()
+    @property (nonatomic, weak) IBOutlet UIView *layerView;
+    @property (nonatomic, weak) IBOutlet CALayer *colorLayer;
+    @end
+    @implementation ViewController
+    - (void)viewDidLoad {
+    [super viewDidLoad];
+    //create sublayer
+    self.colorLayer = [CALayer layer];
+    self.colorLayer.frame = CGRectMake(50.0f, 50.0f, 100.0f, 100.0f);
+    self.colorLayer.backgroundColor = [UIColor blueColor].CGColor;
+    //add it to our view
+    [self.layerView.layer addSublayer:self.colorLayer]; }
+    - (IBAction)changeColor {
+    //randomize the layer background color
+    CGFloat red = arc4random() / (CGFloat)INT_MAX;
+    CGFloat green = arc4random() / (CGFloat)INT_MAX;
+    CGFloat blue = arc4random() / (CGFloat)INT_MAX;
+    self.colorLayer.backgroundColor = [UIColor colorWithRed:red green:green blue:blue
+    alpha:1.0].CGColor;
+    ￼}
+    @end
