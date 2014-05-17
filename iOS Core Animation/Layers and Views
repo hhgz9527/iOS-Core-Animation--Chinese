@@ -50,5 +50,24 @@ CALayer没有响应链机制(iOS在视图层级中传播触摸事件的机制)�
 
 我们后面的章节将会对这些特性进行探索，现在让我们先看看如何使用CALayer
 
+###图层的应用
+
+让我们开始创建一个简单的工程，用来操作图层的属性。在Xcode中，用*Single View Application*模板新建一个iOS工程。
+
+新建一个UIView（200 x 200），你可以选择用代码来实现或者用xib来完成这个工作（无论哪个，选择一个你认为舒服的方法）。要保证在当前的视图控制器中，要有一个属性来访问这个UIView，我们命名它为layerView。
+
+如果你运行这个工程，你就会看到一个白色的正方形和高亮灰色背景（见图 1.3）。如果你没有看到，那么你应该修改下window、view的背景颜色，因为UIView默认为白色。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.3.png)
+>一个白色的UIView位于灰色背景上
+
+但这并不令人兴奋，在这个白色的视图上我们为它添加一些蓝色。
+
+我们能够通过创建一个UIView作为它的子视图，来实现这个效果，但是这不能教会我们任何关于图层的知识。
+
+相反地，我们创建一个CALayer和添加一个子图层在我们的视图底层。尽管图层的属性是暴漏在UIview类中，但在Xcode创建的标准iOS应用程序中，是没有包含Core Animation的头文件，因此在工程添加适当的框架前，我们不能调用一些图层的方法或属性。要做到这一点，首先打开Targets添加QuartzCore框架（见图 1.4），然后导入< QuzrtzCore/QuartzCore.h >到视图控制器的.m文件中。
+
+
+
 
 
