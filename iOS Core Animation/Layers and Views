@@ -61,11 +61,11 @@ CALayer没有响应链机制(iOS在视图层级中传播触摸事件的机制)�
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.3.png)
 >一个白色的UIView位于灰色背景上
 
-但这并不令人感到兴奋，我们在这个白色的视图上为它添加一些蓝色。
+但这并不令人感到兴奋，让我们弄点颜色看看，我们将在白色视图里添加一个蓝色正方形。
 
 我们可以通过创建一个UIView作为它的子视图来实现这个效果（也可以使用代码或者在xib中进行设置），但是这不能教会我们任何关于图层的知识。
 
-相反地，我们创建一个CALayer，添加一个子图层在我们的视图底层。尽管图层的属性是暴漏在UIView类中，但在Xcode创建的标准iOS工程中，是没有包含Core Animation的头文件，因此在工程添加适当的框架前，我们不能调用一些图层的方法或属性。要做到这一点，首先打开Targets添加QuartzCore框架（见图 1.4），然后导入< QuzrtzCore/QuartzCore.h >到视图控制器的.m文件中。
+相反地，我们创建一个CALayer，将它作为子图层添加到我们视图的背景图层里。尽管UIView类中有layer属性，但在Xcode创建的标准iOS工程中，没有包含Core Animation的头文件，因此在工程添加适当的框架前，我们不能调用图层的任何方法或属性。要做到这一点，首先打开Targets添加QuartzCore框架（见图 1.4），然后导入< QuzrtzCore/QuartzCore.h >到视图控制器的.m文件中。
 
 
 
