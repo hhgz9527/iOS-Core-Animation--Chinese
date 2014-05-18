@@ -29,4 +29,10 @@ Core Animation假设所有你在屏幕上的操作都是(至少可能)需要动�
     alpha:1.0].CGColor;
     ￼}
     @end
+***
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/7.1.jpg)
+>图片7.1 添加一个按钮改变图层颜色
 
+这样的动画就是默认动画，它是默认的是因为我们没有指定我们想要的是什么类型的动画，我们只是改变了一个属性，然后由Core Animation决定怎样以及如何去产生动画。Core Animation当然支持自定义动画，我们将在下一章介绍。
+
+当你改变了一个属性，Core Animation是如何确定执行什么类型的以及动画应该持续多久的呢？动画的持续时间是由当前的*transaction*设定的，而动画类型则由图层的*actions*决定
