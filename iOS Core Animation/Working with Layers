@@ -1,2 +1,78 @@
-# Working with Layers
-13
+#图层的功能
+
+如果说CALayer仅仅是实现UIView内部细节的工作，那我们为什么还需要去了解他的有关信息？既然苹果已经提供了好用，简单的UIView接口，我们为什么还需去直接使用Core Animation呢？
+
+确实有些时候，出于简单的目的，我们不需要直接使用CALayer，因为苹果已经在UIView接口里提供了简单的高层API，来轻松的实现强大的功能，比如实现动画效果。
+
+但是便利带来的是缺乏*灵活性*，如果你想做一些超乎寻常的，或者使用苹果并没有在UIView接口里暴露的特性，你就不得不使用Core Animation更底层的API
+
+我们已经知道了，图层不能像UIView一样处理触摸事件，那么图层可以做什么反而是视图不能做的呢？这里列举了一些没有通过UIView暴露出去的CALayer的特性：
+* 阴影，圆角和彩色边框
+* 3D变换和定位
+* 非矩形区域
+* 内容蒙层
+* 多步骤，非直线动画
+
+我们后面的章节将会对这些特性进行探索，现在让我们先看看如何使用CALayer
+
+##图层的应用
+
+让我们开始创建一个简单的工程，用来操作图层的属性。在Xcode中，用*Single View Application*模板新建一个iOS工程。
+
+新建一个UIView（200 x 200），你可以选择用代码来实现或者用xib来完成这个工作（无论哪个，选择一个你认为舒服的方法）。要保证在当前的视图控制器中，要有一个属性来访问这个UIView，我们命名它为layerView。
+
+如果你运行这个工程，你就会看到一个白色的正方形和高亮灰色背景（见图 1.3）。如果你没有看到，那么你应该修改下window、view的背景颜色，因为UIView默认为白色。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.3.png)
+>一个白色的UIView位于灰色背景上
+
+但这并不令人感到兴奋，让我们弄点颜色看看，我们将在白色视图里添加一个蓝色正方形。
+
+我们可以通过创建一个UIView作为它的子视图来实现这个效果（也可以使用代码或者在xib中进行设置），但是这不能教会我们任何关于图层的知识。
+
+相反地，我们创建一个CALayer，将它作为子图层添加到我们视图的背景图层里。尽管UIView类中有layer属性，但在Xcode创建的标准iOS工程中，没有包含Core Animation的头文件，因此在工程添加适当的框架前，我们不能调用图层的任何方法或属性。要做到这一点，首先打开Targets添加QuartzCore框架（见图 1.4），然后导入< QuzrtzCore/QuartzCore.h >到视图控制器的.m文件中。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.4.png)
+>添加QuzrtCore框架到工程中
+
+接下来，我们就可以在代码中直接调用CALayer的属性和方法，在示例1.1中，我们创建一个新的CALayer，设置他的backgroundColor属性，然后添加子图层到layerView的背景图层中（代码假设我们创建的视图是已经连接了layerView的出口）。见图1.5。
+
+CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroundColor属性是UIColor类型，因此我们需要使用CGColor属性来设置颜色。如果你喜欢，可以创建一个CGColor直接使用Core Graphics方法，但是使用UIColor可以在你不需要它的时候不必亲自去手动释放这个颜色。
+
+**实例 1.1 添加一个蓝色的子图层到视图中**
+```
+#import "ViewController.h"
+#import <QuartzCore/QuartzCore.h>
+
+@interface ViewController ()
+@property (nonatomic, weak) IBOutlet UIView *layerView;
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //create sublayer
+    CALayer *blueLayer = [CALayer layer];
+    blueLayer.frame = CGRectMake(50.0f, 50.0f, 100.0f, 100.0f);
+    blueLayer.backgroundColor = [UIColor blueColor].CGColor;
+    //add it to our view
+    [self.layerView.layer addSublayer:blueLayer];
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.5.png)
+>蓝色的CALayer嵌套在白色的UIView中
+
+一个视图只有一个背景层（自动创建）但是能够无限制的添加图层。如示例1.1，你能够很清楚的看到创建一个单独的图层作为子视图被添加进视图的背景层中。尽管他是以这种方式添加图层，但你不需要创建额外的图层。
+
+在Mac OS 10.8之前，背景图层视图代替单独的CALayer树负责一个单独的视图会降低性能，但在iOS的轻量级UIView类中几乎没有任何负面影响表现在处理层(在Mac OS 10.8中，NSView的性能大大改善)。
+
+使用背景图层代替CALayer，当你仍然使用CALayer底层性能，你不会失去一些由UIView提供的高级的API（例如自动缩放、自动布局和事件响应）。
+
+你可能还有一些理由想使用CALayer代替UIView的背景图层在真正的应用程序中，然而：
+- 你也许需要编写跨平台的代码，在Mac上工作。
+- 你也许需要多个CALayer的子类（见第六章 “专业图层”）和不想创建一个新的UIView子类负责全部。
+- 你也许做一些关键性的工作，甚至忽略维护额外的UIView对象，即使是微不足道的开销（如此情况，你大概想使用一些像OpenGL来绘制）。
+
+但是这些情况是非常少见的，一般情况下，背景图层视图比起承载层更简单。

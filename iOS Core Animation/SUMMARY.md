@@ -2,9 +2,9 @@
 
 * [图层树](The Layer Tree)
     * [图层和视图](Layers and Views)
-    * [Layer Capabilities](Layer Capabilities)
-    * [Working with Layers](Working with Layers)
-    * [Summary](Summary1)
+    * [对等图层](Layer Capabilities)
+    * [图层的功能](Working with Layers)
+    * [总结](Summary1)
 * [The Backing Image](The Backing Image)
     * [The contents Image](The contents Image)
     * [Custom Drawing](Custom Drawing)
