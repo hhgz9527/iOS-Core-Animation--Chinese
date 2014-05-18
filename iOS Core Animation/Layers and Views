@@ -96,7 +96,26 @@ CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroun
 }
 @end
 ```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.5.png)
+>蓝色的CALayer嵌套在白色的UIView中
 
+一个视图只有一个背景层（自动创建）但是能够无限制的添加图层。如示例1.1，你能够很清楚的看到创建一个单独的图层作为子视图被添加进视图的背景层中。尽管他是以这种方式添加图层，但你不需要创建额外的图层。
+
+在Mac OS 10.8之前，背景图层视图代替单独的CALayer树负责一个单独的视图会降低主要性能，但在iOS的轻量级UIView类几乎没有任何负面影响表现在处理层(在Mac OS 10.8中，NSView的性能大大改善)。
+
+使用背景图层代替负责CALayer，当你仍然使用CALayer底层性能，你不会失去一些由UIView提供的高级的API（例如自动缩放、自动布局和事件响应）。
+
+你可能还有一些理由想使用CALayer代替UIView的背景图层在真正的应用程序中，然而：
+- 你也许需要在Mac上工作，编写跨平台的代码。
+- 你也许需要多个CALayer的子类（见第六章 “专业图层”）和不想创建一个新的UIView子类负责全部。
+- 你也许做一些关键性的工作甚至忽略维护临时的UIView对象不同的测量（如此情况，你大概想使用一些像OpenGL来绘制）。
+
+但是这些情况是非常少见的，一般情况下，背景图层视图比起承载层更简单。
+
+###总结
+这个章节探索了图层树，CALayer对象的层次结构是平行在 UIView层次结构下形成iOS界面。我们也可以创建自己的CALayer和尝试添加它到图层树中。
+
+在第二章，“背景图片”，我们可以看到由Core Animation控制的CALayer背景图片和属性来如何展现。
 
 
 
