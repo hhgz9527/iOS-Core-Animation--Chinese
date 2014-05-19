@@ -1,2 +1,6 @@
 #内部图片
-CALayer有一个属性叫做contents。这个属性是一个id类型，意外着它能够是任何一种对象。
+CALayer有一个属性叫做contents。这个属性是一个id类型，意外着它能够是任何一种对象。这是真的，你可以分配任何对象给Contents属性,你的程序仍然能够正确的编译它。在实践中，如果你提供CGImage之外的图片类型，那你的图层将是空白的。
+
+contents属性接口是继承自Mac OS的Core Animation。在Mac OS上，contents是被定义为id类型，因为你能够分配CGImage或NSImage中任意一个属性，他将自动完成工作。如果你尝试分配一个UIImage在iOS上，无论如何，你只会得到一个空白的图层。这也是出现在iOS开发中，容易混淆谁是新的Core Animation。
+
+让人头疼的不仅仅是这个。你实际上需要提供的类型是CGImageRef，这是一个指向CGImage结构的指针。UIImage有CGImage返回的底层CGImageRef属性。如果你尝试直接使用CALayer contents属性，那它是不会编译的，因为CGImageRef实际上不是Cocoa对象，它是一个Core Foundation类型。
