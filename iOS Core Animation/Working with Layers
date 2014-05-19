@@ -15,7 +15,7 @@
 
 我们后面的章节将会对这些特性进行探索，现在让我们先看看如何使用CALayer
 
-##图层的应用
+#图层的应用
 
 让我们开始创建一个简单的工程，用来操作图层的属性。在Xcode中，用*Single View Application*模板新建一个iOS工程。
 
@@ -33,13 +33,13 @@
 相反地，我们创建一个CALayer，将它作为子图层添加到我们视图的背景图层里。尽管UIView类中有layer属性，但在Xcode创建的标准iOS工程中，没有包含Core Animation的头文件，因此在工程添加适当的框架前，我们不能调用图层的任何方法或属性。要做到这一点，首先打开Targets添加QuartzCore框架（见图 1.4），然后导入< QuzrtzCore/QuartzCore.h >到视图控制器的.m文件中。
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.4.png)
->添加QuzrtCore框架到工程中
+>添加QuzrtzCore框架到工程中
 
 接下来，我们就可以在代码中直接调用CALayer的属性和方法，在示例1.1中，我们创建一个新的CALayer，设置他的backgroundColor属性，然后添加子图层到layerView的背景图层中（代码假设我们创建的视图是已经连接了layerView的出口）。见图1.5。
 
 CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroundColor属性是UIColor类型，因此我们需要使用CGColor属性来设置颜色。如果你喜欢，可以创建一个CGColor直接使用Core Graphics方法，但是使用UIColor可以在你不需要它的时候不必亲自去手动释放这个颜色。
 
-**实例 1.1 添加一个蓝色的子图层到视图中**
+**示例 1.1 添加一个蓝色的子图层到视图中**
 ```
 #import "ViewController.h"
 #import <QuartzCore/QuartzCore.h>

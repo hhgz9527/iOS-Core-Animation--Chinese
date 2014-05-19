@@ -1,2 +1,2 @@
-# The contents Image
-21
+#内部图片
+CALayer有一个属性叫做contents。这个属性是一个id类型，意外着它能够是任何一种对象。
