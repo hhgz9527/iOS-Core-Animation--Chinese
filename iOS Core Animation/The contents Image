@@ -4,3 +4,25 @@ CALayer有一个属性叫做contents。这个属性是一个id类型，意外着
 contents属性接口是继承自Mac OS的Core Animation。在Mac OS上，contents是被定义为id类型，因为你能够分配CGImage或NSImage中任意一个属性，他将自动完成工作。如果你尝试分配一个UIImage在iOS上，无论如何，你只会得到一个空白的图层。这也是出现在iOS开发中，容易混淆谁是新的Core Animation。
 
 让人头疼的不仅仅是这个。你实际上需要提供的类型是CGImageRef，这是一个指向CGImage结构的指针。UIImage有CGImage返回的底层CGImageRef属性。如果你尝试直接使用CALayer contents属性，那它是不会编译的，因为CGImageRef实际上不是Cocoa对象，它是一个Core Foundation类型。
+
+尽管核心框架类型在执行起来都像Cocoa对象（了解*toll-free bridging*），如果你不使用*bridged cast*他们就不能兼容id类型。在分配一个图片图层时候，你通常需要按照这样来写：
+```
+layer.contents = (__bridge id)imgage.CGImage;
+```
+如果你不使用ARC（Autimatic Reference Counting），那么你就不用写__bridge，但是*你为什么不使用ARC呢？！*
+
+让我们修改下在第一章中创建的工程，然后在背景色中显示一个图片。我们不需要额外的承载层在我们已经证实可以通过图层的方式来实现，因此，我们直接设置一个图片在layerView的背景层contents中。
+
+示例 2.1 更新了代码。图 2.1 展示了结果
+
+**示例 2.1 设置一个CGImgae在图层的contents中**
+```
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load an image
+    UIImage *image = [UIImage imageNamed:@"Snowman.png"];
+    //add it directly to our view's layer
+    self.layerView.layer.contents = (__bridge id)image.CGImage;
+    }
+@end
+```
