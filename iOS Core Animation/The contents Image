@@ -26,3 +26,30 @@ layer.contents = (__bridge id)imgage.CGImage;
     }
 @end
 ```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.1.png)
+**图 2.1 一个UIView的背景层中包含着一张图片**
+
+这只是一些简单的代码，但所做让我们感到一些有趣的地方：使用CALayer功能，我们能在一个普通的UIView中显示一张图片。这不是UIImageView；它也不是正常显示图片的方法。直接操作这个图层，我们了解到新的功能和使我们简陋的UIView更加有趣。
+
+### contentsGravity
+你也许看到我们的雪人有点...胖。我们加载的这个图片并不是正方形，但是它自动调整以适应这个视图。你大概在UIImageView上也见过类似的情况，解决这个的问题就是设置这个视图的contentMode属性，像这样：
+```
+view.contentMode = UIViewContentModeScaleAspectFit;
+```
+在这里是最好的方法（尝试着做它），但大多数的视觉属性UIView，例如contentMode实际只负责底层的等效性。
+
+等效性是通过CALayer调用contentsGravity和一个NSString的enum像UIKit相似。contentsGravity设置为下列这些常量值：
+```
+kCAGravityCenter
+kCAGravityTop
+kCAGravityBottom
+kCAGravityLeft
+kCAGravityRight
+kCAGravityTopLeft
+kCAGravityTopRight
+kCAGravityBottomLeft
+kCAGravityBottomRight
+kCAGravityResize
+kCAGravityResizeAspect
+kCAGravityResizeAspectFill
+```
