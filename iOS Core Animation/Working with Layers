@@ -35,9 +35,9 @@
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.4.png)
 >添加QuzrtzCore框架到工程中
 
-接下来，我们就可以在代码中直接调用CALayer的属性和方法，在示例1.1中，我们创建一个新的CALayer，设置他的backgroundColor属性，然后添加子图层到layerView的背景图层中（代码假设我们创建的视图是已经连接了layerView的出口）。见图1.5。
+接下来，我们就可以在代码中直接调用CALayer的属性和方法，在示例1.1中，我们创建一个新的CALayer，设置他的backgroundColor属性，然后添加子图层到layerView的背景图层中（代码假设我们是通过Interface Builder创建的视图并且已经连接了layerView）。见图1.5。
 
-CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroundColor属性是UIColor类型，因此我们需要使用CGColor属性来设置颜色。如果你喜欢，可以创建一个CGColor直接使用Core Graphics方法，但是使用UIColor可以在你不需要它的时候不必亲自去手动释放这个颜色。
+CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroundColor属性是UIColor类型，因此我们需要使用UIColor的CGColor属性来设置颜色。如果你喜欢，可以直接使用Core Graphics的方法创建一个CGColor，但是使用UIColor可以让你在不需要它的时候不必手动释放它。
 
 **示例 1.1 添加一个蓝色的子图层到视图中**
 ```
@@ -62,17 +62,17 @@ CALayer的backgroundColor属性是CGColorRef类型，不像UIView类的backgroun
 @end
 ```
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/1.5.png)
->蓝色的CALayer嵌套在白色的UIView中
+>图1.5 蓝色的CALayer嵌套在白色的UIView中
 
-一个视图只有一个背景层（自动创建）但是能够无限制的添加图层。如示例1.1，你能够很清楚的看到创建一个单独的图层作为子视图被添加进视图的背景层中。尽管他是以这种方式添加图层，但你不需要创建额外的图层。
+一个视图只有一个*背景*层（自动创建）但是能够无限制的添加图层。如示例1.1，你可以明确的创建一个图层并且把它作为子视图添加进视图的背景层中。尽管这种方式是可行的，但是大多数的时候，你只需要简单的处理视图以及它对应的背景图层，而不需要手动添加额外的图层。
 
-在Mac OS 10.8之前，背景图层视图代替单独的CALayer树负责一个单独的视图会降低性能，但在iOS的轻量级UIView类中几乎没有任何负面影响表现在处理层(在Mac OS 10.8中，NSView的性能大大改善)。
+在Mac OS，直到 10.8版本，使用带有背景层的视图树，代替了托管在视图内的CALayer树，这带来了明显的性能提升，但iOS的轻量级UIView结合图层几乎没有对性能造成任何负面影响(在Mac OS 10.8中，NSView的性能同样大大改善)。
 
-使用背景图层代替CALayer，当你仍然使用CALayer底层性能，你不会失去一些由UIView提供的高级的API（例如自动缩放、自动布局和事件响应）。
+使用带有背景图层的视图代替代替托管CALayer的好处是，你即可以使用全部底层CALayer的特性，又可以使用UIView提供的高层APIs（例如自动缩放、自动布局和事件响应）。
 
-你可能还有一些理由想使用CALayer代替UIView的背景图层在真正的应用程序中，然而：
-- 你也许需要编写跨平台的代码，在Mac上工作。
-- 你也许需要多个CALayer的子类（见第六章 “专业图层”）和不想创建一个新的UIView子类负责全部。
-- 你也许做一些关键性的工作，甚至忽略维护额外的UIView对象，即使是微不足道的开销（如此情况，你大概想使用一些像OpenGL来绘制）。
+在真正的应用程序中,你可能依然有很少的原因，想使用托管的CALayer代替带有背景图层的UIView，然而：
+- 你也许需要编写跨平台的代码，使其在Mac上也能工作。
+- 你也许想创建多个CALayer（见第六章 “专业图层”）而不想创建一个新的UIView。
+- 你也许做一些对性能要求很高的工作，甚至维护一个可以忽略不计的额外的UIView对象，都会导致显著的不同（如果真的如此，你可能需要OpenGL来绘制了）。
 
-但是这些情况是非常少见的，一般情况下，背景图层视图比起承载层更简单。
+但是这些情况是非常少见的，一般情况下，使用带有背景图层的视图会比使用托管图层更简单。
