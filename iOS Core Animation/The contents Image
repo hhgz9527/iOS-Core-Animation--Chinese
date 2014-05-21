@@ -53,3 +53,11 @@ kCAGravityResize
 kCAGravityResizeAspect
 kCAGravityResizeAspectFill
 ```
+类似contentMode，contentGravity的目的是确定应该如何对其内容的图层边界，我们使用的kCAGravityResizeAspect相当于UIViewContentModeScaleAspectFit，使图像的缩放适应图层边界，不造成扭曲现象：
+```
+self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
+```
+>雪人图片的显示，正确为contentsGravity
+
+###contentsScale
+
