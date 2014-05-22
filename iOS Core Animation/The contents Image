@@ -75,7 +75,7 @@ contentsScale属性实际上部分机制是支持高分辨率（*a.k.a. Hi-DPI o
 >视网膜图像显示默认contentsScale是错误的
 
 正如你所见，我们的雪人十分巨大和像素化的。这是因为CGImage（不像UIImage）是没有内部的缩放概念。当我们使用
-UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的样子，在转换过程中，比例将失去正确的。我们能够通过手动的方法设置contentsScale相当于我们的UIImage scale属性（见示例 2.2）。图 2.4 为展示的结果。
+UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的样子，在转换过程中，比例将失去正确的。我们能够通过手动的方法设置contentsScale适配于我们的UIImage scale属性（见示例 2.2）。图 2.4 为展示的结果。
 ```
 @implementation ViewController
 - (void)viewDidLoad {
@@ -91,3 +91,5 @@ UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的�
 
 ![alt text](少图)
 >使用正确的contentsScale视网膜图像显示相同
+
+当你为neizh
