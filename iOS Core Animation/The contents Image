@@ -62,3 +62,32 @@ self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
 ###contentsScale
 contentsScale属性定义了一个比例支持图层的像素尺寸和视图的大小。这是一个浮点值,默认为1.0。
 contentsScale属性并不是显而易见的。它不能一直影响屏幕上的背景图片的缩放比例；如果你尝试设置各种不同的值在我们的雪人例子上，你会发现没有发生任何变化，因为contents中的图片已经被contentsGravity属性缩放为适合图层尺寸的大小了。
+
+如果你想简单的变焦图层的contents图片，你能使用图层的transform活着affineTransform属性（见第五章，“Transforms”，变形说明），但是它的目的不是contentsScale。
+
+contentsScale属性实际上部分机制是支持高分辨率（*a.k.a. Hi-DPI or Retina*）的屏幕上的。它使用目的是内置图片的尺寸是根据图层自动创建绘制的，和contents内的图片缩放显示的规模（假设它没有被contentsGravity设置）。UIView拥有十分相似的属性叫做contentScaleFactor。
+
+如果你设置contentsScale为1.0，那么绘制出来的分辨率是每一个点一个像素，如果你设置为2.0，那么每个点将是两个像素，这是a.k.a.视网膜分辨率。（如果你不理解说明是像素和点，在接下来的章节中我们会讲到。）
+
+实际上这并不是使用kCAGravityResizeAspect产生的差异，因为它是在不考虑分辨率的情况下，缩放图片来适合这个图层。但是如果我们选择contentsGravity的kCAGravityCenter来代替（他们都不能缩放图片），正如看上去的不同（见图 2.3）。
+
+![alt text](少图片)
+>视网膜图像显示默认contentsScale是错误的
+
+正如你所见，我们的雪人十分巨大和像素化的。这是因为CGImage（不像UIImage）是没有内部的缩放概念。当我们使用
+UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的样子，在转换过程中，比例将失去正确的。我们能够通过手动的方法设置contentsScale相当于我们的UIImage scale属性（见示例 2.2）。图 2.4 为展示的结果。
+```
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load an image
+    UIImage *image = [UIImage imageNamed:@"Snowman.png"]; //add it directly to our view's layer
+    self.layerView.layer.contents = (__bridge id)image.CGImage; //center the image
+    self.layerView.layer.contentsGravity = kCAGravityCenter;
+    //set the contentsScale to match image
+    self.layerView.layer.contentsScale = image.scale;
+}
+@end
+```
+
+![alt text](少图)
+>使用正确的contentsScale视网膜图像显示相同
