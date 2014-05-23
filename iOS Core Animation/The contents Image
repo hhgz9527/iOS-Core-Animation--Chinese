@@ -92,4 +92,19 @@ UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的�
 ![alt text](少图)
 >使用正确的contentsScale视网膜图像显示相同
 
-当你为neizh
+当你通过编写代码生成内置图片时候，你通常需要记得手动去设置图层的contentsScale来适配屏幕比例；另外，你的图片在视网膜是被上呈现像素状。你应该像这样处理它：
+```
+layer.contentsScale = [UIScreen mainScreen].scale;
+```
+
+###masksToBounds
+现在我们的雪人已经显示正确的尺寸了，你也许注意到一些部分已经超出了视图的边界。默认情况下，UIView可能会让绘制的内容和子视图在指定的界限之外。CALayer也是如此。
+
+UIView上有个属性叫做clipsToBounds，它能够启用或禁止裁剪（用来控制是否允许视图的内容超过它的框架）。CALayer也有一个类似的属性叫做masksToBounds，设置这个属性为YES，我们就能够看到雪人被限制在视图内（如图 2.5）。
+
+
+![alt text](少图)
+>使用masksToBounds裁剪图层的内容
+
+###contentsRect
+CALayer的contentsRect属性允许我们将内置图片正确的显示在图层框架内。它允许图片的缩减和拉伸比contentsGravity属性更加灵活。
