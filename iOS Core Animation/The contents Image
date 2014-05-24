@@ -57,6 +57,7 @@ kCAGravityResizeAspectFill
 ```
 self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
 ```
+![alt text]()
 >雪人图片的显示，正确为contentsGravity
 
 ###contentsScale
@@ -116,4 +117,7 @@ contentsRect与bounds和frame不同，它不能测量出点的位置；它使用
 -   **Pixels（像素）** ---- 物理像素坐标不用于屏幕布局，但他们仍然处理相关图片。UIImage是屏幕分辨率知道，指定大小的点，但是一些低级图像例如CGImage使用像素尺寸，因此你应该记住，他们的尺寸无法适用于视网膜设备。
 -   **Unit（单位）** ---- 单位坐标是一种简单的方法用来测量指定图像或者图层范围的尺寸，如果尺寸大小变化则不需要去调整。单位坐标大量使用了OpenGL的结构坐标，也多次使用在Core Animation中。
 
-contentsRect默认为{0，0，1，1}，
+contentsRect默认为{0，0，1，1}，这意味着支持整个图像是可见的。如果我们指定一小部分矩形，则会裁剪成如图2.6.
+
+![alt text](图)
+
