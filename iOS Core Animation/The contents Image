@@ -57,7 +57,7 @@ kCAGravityResizeAspectFill
 ```
 self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
 ```
-![alt text]()
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.2.png)
 >雪人图片的显示，正确为contentsGravity
 
 ###contentsScale
@@ -72,7 +72,7 @@ contentsScale属性实际上部分机制是支持高分辨率（*a.k.a. Hi-DPI o
 
 实际上这并不是使用kCAGravityResizeAspect产生的差异，因为它是在不考虑分辨率的情况下，缩放图片来适合这个图层。但是如果我们选择contentsGravity的kCAGravityCenter来代替（他们都不能缩放图片），正如看上去的不同（见图 2.3）。
 
-![alt text](少图片)
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.3.png)
 >视网膜图像显示默认contentsScale是错误的
 
 正如你所见，我们的雪人十分巨大和像素化的。这是因为CGImage（不像UIImage）是没有内部的缩放概念。当我们使用
@@ -90,7 +90,7 @@ UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的�
 @end
 ```
 
-![alt text](少图)
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.4.png)
 >使用正确的contentsScale视网膜图像显示相同
 
 当你通过编写代码生成内置图片时候，你通常需要记得手动去设置图层的contentsScale来适配屏幕比例；另外，你的图片在视网膜是被上呈现像素状。你应该像这样处理它：
@@ -104,7 +104,7 @@ layer.contentsScale = [UIScreen mainScreen].scale;
 UIView上有个属性叫做clipsToBounds，它能够启用或禁止裁剪（用来控制是否允许视图的内容超过它的框架）。CALayer也有一个类似的属性叫做masksToBounds，设置这个属性为YES，我们就能够看到雪人被限制在视图内（如图 2.5）。
 
 
-![alt text](少图)
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.5.png)
 >使用masksToBounds裁剪图层的内容
 
 ###contentsRect
@@ -117,7 +117,67 @@ contentsRect与bounds和frame不同，它不能测量出点的位置；它使用
 -   **Pixels（像素）** ---- 物理像素坐标不用于屏幕布局，但他们仍然处理相关图片。UIImage是屏幕分辨率知道，指定大小的点，但是一些低级图像例如CGImage使用像素尺寸，因此你应该记住，他们的尺寸无法适用于视网膜设备。
 -   **Unit（单位）** ---- 单位坐标是一种简单的方法用来测量指定图像或者图层范围的尺寸，如果尺寸大小变化则不需要去调整。单位坐标大量使用了OpenGL的结构坐标，也多次使用在Core Animation中。
 
-contentsRect默认为{0，0，1，1}，这意味着支持整个图像是可见的。如果我们指定一小部分矩形，则会裁剪成如图2.6.
+contentsRect默认为{0，0，1，1}，这意味着支持整个图像是可见的。如果我们指定一小部分矩形，则会裁剪成如图2.6的样子。
 
-![alt text](图)
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.6.png)
+>左侧为自定义contentsRect，右侧则是裁剪后的显示内容。
 
+它实际上可以指定一个contentsRect具有负原点或尺寸大于{1，1}。在这种情况下，图像的最外面的像素将被拉伸以填满剩余的区域。
+
+contentsRect最有趣的使用是它能够使用所谓的*图像的精灵*。如果你编写过一些游戏程序，那么你应该很熟悉精灵这个概念，它能够使图片单独的在屏幕上移动。但是在游戏世界之外，它通常用来使用图像的子画面的加载，然后使它运动起来。
+
+具有代表性的是，许多精灵都是包含在一张大的图像中。这种方式有许多好处，在内存使用，加载时间和渲染性能上超过使用多个单独的图像文件。
+
+精灵通常出现在2D游戏引擎中，如Cocos2D，使用OpenGL展示图片。但是，我们可以利用contentsRect在一个普通的UIKit的应用程序中使用的精灵。
+
+在开始之前，我们需要一个*精灵模板*----一个巨大的图像中包含一些小的精灵图像。如图2.7所展示的精灵模板。
+
+![alt text]()
+>精灵模板
+
+接下来，我们需要加载这些图片，显示在我们的app中。原理非常简单：我们加载这张大图片，将内容分为四个图层（每个即是一个精灵），然后设置contentsRect屏蔽我们不想要的部分。
+
+我们需要在工程中为精灵图层添加一些额外的视图。（最好使用xib来完成这个工作，避免使用繁杂的代码，如果你愿意的话，依然可以用代码来创建）。示例2.3为示例代码，图2.8为最终输出结果。
+
+**通过设置contentsRect来完成精灵模板**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *coneView;
+@property (nonatomic, weak) IBOutlet UIView *shipView;
+@property (nonatomic, weak) IBOutlet UIView *iglooView;
+@property (nonatomic, weak) IBOutlet UIView *anchorView;
+
+@end
+
+@implementation ViewController
+
+- (void)addSpriteImage:(UIImage *)image withContentRect:(CGRect)rect
+￼toLayer:(CALayer *)layer //set image
+{
+    layer.contents = (__bridge id)image.CGImage;
+    //scale contents to fit
+    layer.contentsGravity = kCAGravityResizeAspect;
+    //set contentsRect
+    layer.contentsRect = rect;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //load sprite sheet
+    UIImage *image = [UIImage imageNamed:@"Sprites.png"];
+    //set igloo sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0, 0, 0.5, 0.5)
+toLayer:self.iglooView.layer];
+    //set cone sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0.5, 0, 0.5, 0.5)
+toLayer:self.coneView.layer];
+    //set anchor sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0, 0.5, 0.5, 0.5)
+toLayer:self.anchorView.layer];
+    //set spaceship sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0.5, 0.5, 0.5, 0.5)
+toLayer:self.shipView.layer];
+}
+@end
+```
