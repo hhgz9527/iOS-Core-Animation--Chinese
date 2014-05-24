@@ -132,7 +132,7 @@ contentsRect最有趣的使用是它能够使用所谓的*图像的精灵*。如
 
 在开始之前，我们需要一个*精灵模板*----一个巨大的图像中包含一些小的精灵图像。如图2.7所展示的精灵模板。
 
-![alt text]()
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.7.png)
 >精灵模板
 
 接下来，我们需要加载这些图片，显示在我们的app中。原理非常简单：我们加载这张大图片，将内容分为四个图层（每个即是一个精灵），然后设置contentsRect屏蔽我们不想要的部分。
@@ -181,3 +181,5 @@ toLayer:self.shipView.layer];
 }
 @end
 ```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.8.png)
+>4个精灵随机摆放在屏幕上
