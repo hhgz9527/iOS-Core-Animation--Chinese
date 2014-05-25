@@ -183,3 +183,20 @@ toLayer:self.shipView.layer];
 ```
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.8.png)
 >4个精灵随机摆放在屏幕上
+
+现有的模板上创建新的精灵或需要改变尺寸大小。
+
+在Mac上几个商业应用程序都是利用精灵模板自动创建。这些工具简化了精灵的使用，通过XML或者属性列表（Plist）文件包含精灵的坐标。这个文件可以加载图像和用于设置contentsRect剪切每一个精灵，而开发人员不必手动编写坐标代码到应用程序中。
+
+这个文件通常计划使用在OpenGL游戏中，如果你对使用精灵模板感兴趣的话，你可以打开[LayerSprites](https://github.com/nicklockwood/LayerSprites)目录浏览相关资料，能够查阅到精灵模板在Cocos2D中的格式和普通的Core Animation显示。
+
+###contentsCenter
+
+这章中最后一个与contents有关的属性是contentsCenter。你也许会通过contentsCenter这个名字认为它是图片内容的中心点，但这是错误的。contentsCenter实际上是CGRect定义的可拉伸图层和边缘范围的。改变contentsCenter并没有影响图片的显示，直到修改图层的大小后，它的功能才显示出来。
+
+默认的contentsCenter是{0，0，1，1}，这意味着当图片调整大小时候，被拉伸是均匀的（依赖于contentsGravity）。但如果我们增加原点值和减少尺寸，我们可以创建一个边框包围图像。如图2.9所展示的，通过设置contentsCenter值为{0.25，0.25，0.5，0.5}来完成缩放工作。
+
+![alt text]()
+>示例为一个contentsCenter矩形，影响着上面的图像。
+
+
