@@ -196,7 +196,7 @@ toLayer:self.shipView.layer];
 
 默认的contentsCenter是{0，0，1，1}，这意味着当图片调整大小时候，被拉伸是均匀的（依赖于contentsGravity）。但如果我们增加原点值和减少尺寸，我们可以创建一个边框包围图像。如图2.9所展示的，通过设置contentsCenter值为{0.25，0.25，0.5，0.5}来完成缩放工作。
 
-![alt text]()
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.9.png)
 >示例为一个contentsCenter矩形，影响着上面的图像。
 
 
