@@ -192,11 +192,46 @@ toLayer:self.shipView.layer];
 
 ###contentsCenter
 
-这章中最后一个与contents有关的属性是contentsCenter。你也许会通过contentsCenter这个名字认为它是图片内容的中心点，但这是错误的。contentsCenter实际上是CGRect定义的可拉伸图层和边缘范围的。改变contentsCenter并没有影响图片的显示，直到修改图层的大小后，它的功能才显示出来。
+这是本章中最后一个与contents有关的属性----contentsCenter。你也许会通过contentsCenter名字认为它是图片内容的中心点，但这是错误的。contentsCenter实际上是CGRect定义的可拉伸图层和边缘范围的。改变contentsCenter并没有影响图片的显示，直到修改图层的大小后，它的功能才显示出来。
 
 默认的contentsCenter是{0，0，1，1}，这意味着当图片调整大小时候，被拉伸是均匀的（依赖于contentsGravity）。但如果我们增加原点值和减少尺寸，我们可以创建一个边框包围图像。如图2.9所展示的，通过设置contentsCenter值为{0.25，0.25，0.5，0.5}来完成缩放工作。
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.9.png)
 >示例为一个contentsCenter矩形，影响着上面的图像。
 
+这意味着我们可以随意调整视图的边界保证始终一致（见图 2.10）。它的功能有点类似UIImage的-resizableImageWithCapInsets:方法，但是能用于任何图层的内置图像，包括一个在执行时绘制使用的Core Graphics（将在本章后面讲到）。
 
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.10.png)
+>两个视图都使用可伸缩的内置图像
+
+示例2.4展示了如何通过代码来完成改变视图拉抻的工程。然而，添加一个contentsCenter特征可以在xib中不编写任何代码来完成拉伸图像的工作，我们可以看图2.11中Insperctor窗口。
+
+**示例 2.4 通过设置contentsCenter拉伸图像**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *button1;
+@property (nonatomic, weak) IBOutlet UIView *button2;
+
+@end
+
+@implementation ViewController
+
+- (void)addStretchableImage:(UIImage *)image withContentCenter:(CGRect)rect toLayer:(CALayer *)layer{
+    layer.contents = (__bridge id)image.CGImage;
+    //set contentsCenter
+    layer.contentsCenter = rect;
+}
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load button image
+    UIImage *image = [UIImage imageNamed:@"Button.png"];
+    //set button 1
+    [self addStretchableImage:image withContentCenter:CGRectMake(0.25, 0.25, 0.5, 0.5)
+toLayer:self.button1.layer];
+    //set button 2
+    [self addStretchableImage:image withContentCenter:CGRectMake(0.25, 0.25, 0.5, 0.5)
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.11.png)
+>在Inspector中设置contentsCenter
