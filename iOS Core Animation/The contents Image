@@ -239,5 +239,20 @@ toLayer:self.button1.layer];
 ###Custom Drawing
 设置图层contents的内置图像，CGImage并不是唯一的方法,也可以直接使用Core Graphics在内置图像中绘制。-drawRect:方法能够用在UIView的子类中执行自定义绘制。
 
--drwaRect:方法
+-drwaRect:方法默认是不执行的，因为在UIView中如果只是填充颜色或者是在图层的contents属性下的图像例子。如果UIView检测到-drawRect:方法存在，它会分配一个新的视图支持图像，像素的尺寸等于视图的尺寸乘以contentsScale。
+
+如果你不需要这个内置图像，那么它会浪费内存和CPU时间去创建它，如果你不打算绘制一些自定义的东西，苹果公司推荐你不要设置一个空的-drawRect:方法在你的图层子类中。
+
+-drawRect:方法是在视图首次出现在屏幕上时自动执行。代码是在-drawRect:方法中使用Core Graphics来完成绘制图像，在视图需要更新之前结果都将缓存起来（通常开发者调用-setNeedsDisplay方法，虽然有些视图类型每当属性影响它们的样式改变则会自动刷新[例如bounds]）。尽管-drawRect:是UIView的方法，但它实际上是CALayer下绘制和保存图像结果。
+
+##这段翻译太坑了，标记一下
+CALayer有一个可选的delegate属性，是CALayerDelegate协议。当CALayer需要内容特性信息，它便会通过代理请求。CALayerDelegate是一个非正式协议，这句话的意思是没有实际CALayerDelegate @protocol，你可以在你的类接口引用一个奇特的方式。你只需要添加你需要的方法，如果存在的CALayer会打通知给他们。 （代理协议只是声明为一个id，所有的委托方法被视为可选的。）
+
+当需要刷新屏幕时，CALayer通过代理提供内置图像以展示。它会尝试调用下列这个方法：
+```
+- (void)displayLayer:(CALayerCALayer *)layer;
+```
+
+
+
 
