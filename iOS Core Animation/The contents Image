@@ -235,3 +235,9 @@ toLayer:self.button1.layer];
 ```
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.11.png)
 >在Inspector中设置contentsCenter
+
+###Custom Drawing
+设置图层contents的内置图像，CGImage并不是唯一的方法,也可以直接使用Core Graphics在内置图像中绘制。-drawRect:方法能够用在UIView的子类中执行自定义绘制。
+
+-drwaRect:方法
+
