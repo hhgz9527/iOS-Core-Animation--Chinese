@@ -252,7 +252,49 @@ CALayer有一个可选的delegate属性，是CALayerDelegate协议。当CALayer�
 ```
 - (void)displayLayer:(CALayerCALayer *)layer;
 ```
+如果想直接代理设置图层contents属性，就可以使用这个，这种情况下没有其他方法被调用。如果代理没有执行-displayLayer:方法，CALayer会尝试调用下列这个方法：
+```
+- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx;
+```
+在调用这个方法以前，CALayer创建一个空的合适大小的内置图像（在图层的bounds和contentsScale基础上）和用Core Graphics绘制图像的上下文，通过ctx参数。
 
+让我们修改下第一章中的工程，实现CALayerDelegate协议和一些绘制（见示例 2.5）。图2.12为运行结果。
+
+**示例 2.5 CALayerDelegate**
+```
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+￼
+    //create sublayer
+    CALayer *blueLayer = [CALayer layer];
+    blueLayer.frame = CGRectMake(50.0f, 50.0f, 100.0f, 100.0f); blueLayer.backgroundColor = [UIColor blueColor].CGColor;
+    //set controller as layer delegate
+blueLayer.delegate = self;
+    //ensure that layer backing image uses correct scale
+    blueLayer.contentsScale = [UIScreen mainScreen].scale; //add layer to our view
+    [self.layerView.layer addSublayer:blueLayer];
+    //force layer to redraw
+    [blueLayer display];
+}
+- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
+    //draw a thick red circle
+    CGContextSetLineWidth(ctx, 10.0f);
+    CGContextSetStrokeColorWithColor(ctx, [UIColor redColor].CGColor);
+    CGContextStrokeEllipseInRect(ctx, layer.bounds);
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.12.png)
+>使用CALayerDelegate在图层内置图像中绘制
+
+值得记录的两个地方：
+-   我们通过手动调用-display方法，促使blueLayer去更新。不像UIView、CALayer呈现在屏幕上时候不会自动的重新绘制；这些则需要开发者决定何时去重新绘制。
+-   绘制的这个圆一部分被图层的bounds剪去了，但是我们没有使用masksToBounds属性。因为在你绘制的时候使用了CALayerDelegate，CALayer创建一个上下文刚好符合图层的规模。没有规定了这些界限之外的绘制。
+
+现在你理解CALayerDelegate和如何使用它。但是你仅仅创建单一的图层，你几乎不需要实现CALayerDelegate协议。因为当UIView创建内置图层时候，它会子欧诺个设置图层的delegate和提供实现-displayLayer:抽象这个问题。
+
+当使用视图内置图层，你需要实现-displayLayer:或-drawLayer:inContext:在你图层的内置图像中绘制；你仅需在UIView中实现-drawRect:方法，UIView会关注每一个事件，包含在图层需要重新绘制时候自动去调用-display方法。
 
 
 
