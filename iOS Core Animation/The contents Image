@@ -11,9 +11,9 @@ layer.contents = (__bridge id)imgage.CGImage;
 ```
 如果你不使用ARC（Autimatic Reference Counting），那么你就不用写__bridge，但是*你为什么不使用ARC呢？！*
 
-让我们修改下在第一章中创建的工程，然后在背景色中显示一个图片。我们不需要额外的承载层在我们已经证实可以通过图层的方式来实现，因此，我们直接设置一个图片在layerView的背景层contents中。
+让我们修改下在第一章中创建的工程，然后在背景中显示一个图片。我们不需要额外的承载层去证实已经可以通过图层的方式来实现，因此，我们直接设置一个图片在layerView的背景层contents中。
 
-示例 2.1 更新了代码。图 2.1 展示了结果
+示例 2.1 更新了代码。图 2.1 展示了结果。
 
 **示例 2.1 设置一个CGImgae在图层的contents中**
 ```
@@ -53,7 +53,7 @@ kCAGravityResize
 kCAGravityResizeAspect
 kCAGravityResizeAspectFill
 ```
-类似contentMode，contentGravity的目的是确定应该如何对其内容的图层边界，我们使用的kCAGravityResizeAspect相当于UIViewContentModeScaleAspectFit，使图像的缩放适应图层边界，不造成扭曲现象：
+contentGravity类似于contentMode，它的目的是确定应该如何对齐内容的图层边界，我们使用的kCAGravityResizeAspect相当于UIViewContentModeScaleAspectFit，使图像的缩放适应图层边界，不造成扭曲现象：
 ```
 self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
 ```
@@ -62,13 +62,13 @@ self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
 
 ###contentsScale
 contentsScale属性定义了一个比例支持图层的像素尺寸和视图的大小。这是一个浮点值,默认为1.0。
-contentsScale属性并不是显而易见的。它不能一直影响屏幕上的背景图片的缩放比例；如果你尝试设置各种不同的值在我们的雪人例子上，你会发现没有发生任何变化，因为contents中的图片已经被contentsGravity属性缩放为适合图层尺寸的大小了。
+contentsScale属性并不是直观的。它不能一直影响屏幕上的背景图片的缩放比例；如果你尝试设置各种不同的值在我们的雪人例子上，你会发现没有发生任何变化，因为contents中的图片已经被contentsGravity属性缩放为适合图层尺寸的大小了。
 
-如果你想简单的变焦图层的contents图片，你能使用图层的transform活着affineTransform属性（见第五章，“Transforms”，变形说明），但是它的目的不是contentsScale。
+如果你想简单的变焦图层的contents图片，你能使用图层的transform或者affineTransform属性（见第五章，“Transforms”，变形说明），但是它的目的不是contentsScale。
 
 contentsScale属性实际上部分机制是支持高分辨率（*a.k.a. Hi-DPI or Retina*）的屏幕上的。它使用目的是内置图片的尺寸是根据图层自动创建绘制的，和contents内的图片缩放显示的规模（假设它没有被contentsGravity设置）。UIView拥有十分相似的属性叫做contentScaleFactor。
 
-如果你设置contentsScale为1.0，那么绘制出来的分辨率是每一个点一个像素，如果你设置为2.0，那么每个点将是两个像素，这是a.k.a.视网膜分辨率。（如果你不理解说明是像素和点，在接下来的章节中我们会讲到。）
+如果你设置contentsScale为1.0，那么绘制出来的分辨率是每一个点一个像素，如果你设置为2.0，那么每个点将是两个像素，这是a.k.a.视网膜分辨率。（如果你不理解什么是像素和点，在接下来的章节中我们会讲到。）
 
 实际上这并不是使用kCAGravityResizeAspect产生的差异，因为它是在不考虑分辨率的情况下，缩放图片来适合这个图层。但是如果我们选择contentsGravity的kCAGravityCenter来代替（他们都不能缩放图片），正如看上去的不同（见图 2.3）。
 
