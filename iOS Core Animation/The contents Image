@@ -135,7 +135,7 @@ contentsRect最有趣的使用是它能够使用所谓的*图像的精灵*。如
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.7.png)
 >精灵模板
 
-接下来，我们需要加载这些图片，显示在我们的app中。原理非常简单：我们加载这张大图片，将内容分为四个图层（每个即是一个精灵），然后设置contentsRect屏蔽我们不想要的部分。
+接下来，我们需要加载这些图片显示在我们的app中。原理非常简单：我们加载这张大图片，将内容分为四个部分（每个即是一个精灵），然后设置contentsRect屏蔽我们不想要的部分。
 
 我们需要在工程中为精灵图层添加一些额外的视图。（最好使用xib来完成这个工作，避免使用繁杂的代码，如果你愿意的话，依然可以用代码来创建）。示例2.3为示例代码，图2.8为最终输出结果。
 
@@ -235,66 +235,3 @@ toLayer:self.button1.layer];
 ```
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.11.png)
 >在Inspector中设置contentsCenter
-
-###Custom Drawing
-设置图层contents的内置图像，CGImage并不是唯一的方法,也可以直接使用Core Graphics在内置图像中绘制。-drawRect:方法能够用在UIView的子类中执行自定义绘制。
-
--drwaRect:方法默认是不执行的，因为在UIView中如果只是填充颜色或者是在图层的contents属性下的图像例子。如果UIView检测到-drawRect:方法存在，它会分配一个新的视图支持图像，像素的尺寸等于视图的尺寸乘以contentsScale。
-
-如果你不需要这个内置图像，那么它会浪费内存和CPU时间去创建它，如果你不打算绘制一些自定义的东西，苹果公司推荐你不要设置一个空的-drawRect:方法在你的图层子类中。
-
--drawRect:方法是在视图首次出现在屏幕上时自动执行。代码是在-drawRect:方法中使用Core Graphics来完成绘制图像，在视图需要更新之前结果都将缓存起来（通常开发者调用-setNeedsDisplay方法，虽然有些视图类型每当属性影响它们的样式改变则会自动刷新[例如bounds]）。尽管-drawRect:是UIView的方法，但它实际上是CALayer下绘制和保存图像结果。
-
-##这段翻译太坑了，标记一下
-CALayer有一个可选的delegate属性，是CALayerDelegate协议。当CALayer需要内容特性信息，它便会通过代理请求。CALayerDelegate是一个非正式协议，这句话的意思是没有实际CALayerDelegate @protocol，你可以在你的类接口引用一个奇特的方式。你只需要添加你需要的方法，如果存在的CALayer会打通知给他们。 （代理协议只是声明为一个id，所有的委托方法被视为可选的。）
-
-当需要刷新屏幕时，CALayer通过代理提供内置图像以展示。它会尝试调用下列这个方法：
-```
-- (void)displayLayer:(CALayerCALayer *)layer;
-```
-如果想直接代理设置图层contents属性，就可以使用这个，这种情况下没有其他方法被调用。如果代理没有执行-displayLayer:方法，CALayer会尝试调用下列这个方法：
-```
-- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx;
-```
-在调用这个方法以前，CALayer创建一个空的合适大小的内置图像（在图层的bounds和contentsScale基础上）和用Core Graphics绘制图像的上下文，通过ctx参数。
-
-让我们修改下第一章中的工程，实现CALayerDelegate协议和一些绘制（见示例 2.5）。图2.12为运行结果。
-
-**示例 2.5 CALayerDelegate**
-```
-@implementation ViewController
-- (void)viewDidLoad {
-    [super viewDidLoad];
-￼
-    //create sublayer
-    CALayer *blueLayer = [CALayer layer];
-    blueLayer.frame = CGRectMake(50.0f, 50.0f, 100.0f, 100.0f); blueLayer.backgroundColor = [UIColor blueColor].CGColor;
-    //set controller as layer delegate
-blueLayer.delegate = self;
-    //ensure that layer backing image uses correct scale
-    blueLayer.contentsScale = [UIScreen mainScreen].scale; //add layer to our view
-    [self.layerView.layer addSublayer:blueLayer];
-    //force layer to redraw
-    [blueLayer display];
-}
-- (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
-    //draw a thick red circle
-    CGContextSetLineWidth(ctx, 10.0f);
-    CGContextSetStrokeColorWithColor(ctx, [UIColor redColor].CGColor);
-    CGContextStrokeEllipseInRect(ctx, layer.bounds);
-}
-@end
-```
-![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.12.png)
->使用CALayerDelegate在图层内置图像中绘制
-
-值得记录的两个地方：
--   我们通过手动调用-display方法，促使blueLayer去更新。不像UIView、CALayer呈现在屏幕上时候不会自动的重新绘制；这些则需要开发者决定何时去重新绘制。
--   绘制的这个圆一部分被图层的bounds剪去了，但是我们没有使用masksToBounds属性。因为在你绘制的时候使用了CALayerDelegate，CALayer创建一个上下文刚好符合图层的规模。没有规定了这些界限之外的绘制。
-
-现在你理解CALayerDelegate和如何使用它。但是你仅仅创建单一的图层，你几乎不需要实现CALayerDelegate协议。因为当UIView创建内置图层时候，它会子欧诺个设置图层的delegate和提供实现-displayLayer:抽象这个问题。
-
-当使用视图内置图层，你需要实现-displayLayer:或-drawLayer:inContext:在你图层的内置图像中绘制；你仅需在UIView中实现-drawRect:方法，UIView会关注每一个事件，包含在图层需要重新绘制时候自动去调用-display方法。
-
-
-
