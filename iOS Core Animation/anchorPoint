@@ -1,2 +1,14 @@
 # anchorPoint
-32
+早前提到，视图的center属性和图层position属性都为图层相对子图层的anchorPoint位置。图层控制anchorPoint属性相当于frame位置的位置属性。你可以把anchorPoint理解为*操作*移动图层。
+
+anchorPoint默认是在图层的中心，无论什么情况，图层都将围绕在它的周围。anchorPoint没有直接在UIView的接口中，这就是为什么视图的位置属性就被称为“center”。但是anchorPoint能够移动图层。你能够将他放置在图层frame的左上角，例如，图层将要向右下移动位置（见图3.3）而不是围绕它。
+
+在第二章中，anchorPoint像contentsRect和contentsCenter一样是*单位坐标*，意味着它的坐标是相对于层的尺寸。左上角的是{0,0}，右下角为{1,1}，默认的中心位置是{0.5, 0.5}。anchorPoint能够被放置在图层的边界之外，设置的x或y值大于或小于零。
+
+图3.3当我们改变anchorPoint，position属性没有改变。反而，图层移动frame的位置还是固定的。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.3.png)
+>在框架内改变anchorPoint所造成的影响
+
+既然如此，我们为什么要修改anchorPoint？我们能够把frame设置在想要的位置，所以没必要修改anchorPoint造成混乱？为了说明这个属性是有用的，我们需要尝试做一个例子。让我们创建一个闹钟且能够移动时针、分针和秒针。
+

@@ -13,3 +13,4 @@ frame实际上不是视图或者图层的属性；它是*虚拟*的属性，当�
 当你进行形状改变工作时候，你需要记住这些，因为当图层旋转或缩放时，frame反映了总轴对齐的矩形区域被变换的图层的父类占有，这意味着frame的宽带和高度可能与bounds不匹配（见图3.2）。
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.2.png)
+>旋转之后的视图或图层的frame属性
