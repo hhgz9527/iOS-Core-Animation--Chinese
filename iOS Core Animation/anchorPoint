@@ -12,3 +12,15 @@ anchorPoint默认是在图层的中心，无论什么情况，图层都将围绕
 
 既然如此，我们为什么要修改anchorPoint？我们能够把frame设置在想要的位置，所以没必要修改anchorPoint造成混乱？为了说明这个属性是有用的，我们需要尝试做一个例子。让我们创建一个闹钟且能够移动时针、分针和秒针。
 
+闹钟的背景和指针可以使用下面四张图（见图3.4）。简单期间，我们将使用传统的方法来显示这些图片，使用四个单独的UIImageView（虽然我们能使用常规的视图来设置他们的内置图层的contents图像）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.4.png)
+>四张图片来构成闹钟的背景和指针
+
+闹钟组合完成如图3.5。图像视图嵌套在另外一个视图容器中，他们都禁用了autoresizing和autolayout。因为autoresizing会影响视图的frame，如图3.2演示的，当图像旋转会使frame改变，如果旋转视图的大小这将导致布局出现问题。
+
+我们将使用NSTimer更新闹钟，通过使用视图的transform数学来转动指针。（如果你不熟悉这个熟悉，可以不用担心；我们会在第五章“Transforms”中讲到）示例 3.1展示了我们的闹钟代码。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.5.png)
+>界面构建器上布局我们的闹钟视图
+
