@@ -12,7 +12,7 @@
 * [图层几何结构](Layer Geometry)
     * [布局](Layout)
     * [anchorPoint](anchorPoint)
-    * [Coordinate Systems](Coordinate Systems)
+    * [坐标系](Coordinate Systems)
     * [Hit Testing](Hit Testing)
     * [Automatic Layout](Automatic Layout)
     * [Summary](Summary3)

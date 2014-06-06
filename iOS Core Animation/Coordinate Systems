@@ -1,2 +1,18 @@
-# Coordinate Systems
+#坐标系
 
+图层像视图一样是具有层次的，它们都有对应的图层树。position相对于图层的bounds的子图层。如果子图层移动，所有的都如这个子图层。
+
+这是为了图层位置方便，因为它允许你在根图层移动将多个图层做为一个单元的子树。但有些时候，你需要了解图层的*绝对*位置或（更常见）相对于图层的其他父层。
+
+CAlayer在转换不同的图层坐标系时提供了一些有效的方法：
+```
+- (CGPoint)convertPoint:(CGPoint)point fromLayer:(CALayer *)layer;
+- (CGPoint)convertPoint:(CGPoint)point toLayer:(CALayer *)layer;
+- (CGRect)convertRect:(CGRect)rect fromLayer:(CALayer *)layer;
+- (CGRect)convertRect:(CGRect)rect toLayer:(CALayer *)layer;
+```
+这些方法使你能够在点或矩形的坐标系统中定义一个图层,并将其转化为另一个的坐标系。
+
+###几何折叠
+
+惯例上iOS的position规定在父类图层的边界左上角。在Mac OS上，position通常是在左下角。Core Animation有优秀的geometryFlipped属性能够支持它们。
