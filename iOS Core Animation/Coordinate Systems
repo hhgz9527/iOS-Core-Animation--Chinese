@@ -15,4 +15,9 @@ CAlayer在转换不同的图层坐标系时提供了一些有效的方法：
 
 ###几何折叠
 
-惯例上iOS的position规定在父类图层的边界左上角。在Mac OS上，position通常是在左下角。Core Animation有优秀的geometryFlipped属性能够支持它们。
+惯例上iOS的position规定在父类图层的边界左上角。在Mac OS上，position通常是在左下角。Core Animation有优秀的geometryFlipped属性能够支持它们。这是通过BOOL值来判断这个几何图层是否根据子图层折叠这个图层。在iOS上设置这个属性为YES意味着子图层将垂直折叠将*底部*作为正常范围，而不是顶部（因为如果都是子图层，诸如此类，除非它们的geometryFlipped属性为YES）。
+
+###Z轴
+
+CALayer不像UIView是二维的，它是三维空间的。此前position和anchorPoint属性我们已经讨论过了，CALayer有两个额外的属性，图层的Z轴是通过zPosition和anchorPointZ描述的，它们都是浮点型值。
+
