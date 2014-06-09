@@ -31,3 +31,28 @@ zPosition属性在大部分情况是十分有用的。在第五章中，我们�
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.8.png)
 >绿色视图在红色视图之下
+
+通过这个的了解，希望你能运用在实际的应用开发中，但如果我们增加了绿色视图zPosition的值（见示例 3.3），我们发现顺序发生了颠倒（如图 3.9）。注意，我们不需要增加它；视图是无限薄的，所以只用增加zPosition的一个单位就能让绿色的视图在红色的上方。例如0.1或更小的0.0001也能产生如此影响，但是请谨慎使用这种非常小的数值，因为浮点值会导致计算误差造成视觉错误。
+
+**调整zPosition改变显示的顺序**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *greenView;
+@property (nonatomic, weak) IBOutlet UIView *redView;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+￼
+    //move the green view zPosition nearer to the camera
+    self.greenView.layer.zPosition = 1.0f;
+}
+
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.9.png)
+>绿色视图在红色视图之上
