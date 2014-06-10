@@ -1,4 +1,61 @@
-# Hit Testing
-34
-testt
-.
+# 碰撞测试
+
+第一章“图层树”中，它通常使用视图的内置图层而不是单独的一个图层。理由之一是因为通过图层处理触摸事件是难以实现的。
+
+CALayer没有响应链，因此它不能直接处理手势或触摸事件。但它有两个方法帮助你实现触摸操作，分别是：```-containsPoint:```和```-hitTest:```。
+
+```-contaunsPoint:```方法接受图层自己的坐标系```CGPoint```,如果图层的```frame```中存在点则返回YES。示例 3.4为第一章中工程的代码，在使用```-containsPoint:```方法后确定白色或蓝色图层两者间是否接触（见图 3.10）。有点尴尬的是，需要将每一个图层的坐标系转换成触摸点。
+
+**示例 3.4 使用```containsPoint:```检测触摸图层**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *layerView;
+@property (nonatomic, weak) CALayer *blueLayer;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //create sublayer
+    self.blueLayer = [CALayer layer];
+    self.blueLayer.frame = CGRectMake(50.0f, 50.0f, 100.0f, 100.0f);
+    self.blueLayer.backgroundColor = [UIColor blueColor].CGColor;
+    //add it to our view
+    [self.layerView.layer addSublayer:self.blueLayer];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+
+    //get touch position relative to main view
+
+    CGPoint point = [[touches anyObject] locationInView:self.view];
+
+    //convert point to the white layer's coordinates
+
+    point = [self.layerView.layer convertPoint:point fromLayer:self.view.layer];
+
+    //get layer using containsPoint:
+
+    if ([self.layerView.layer containsPoint:point]) {
+
+    //convert point to blueLayer’s coordinates
+
+    point = [self.blueLayer convertPoint:point fromLayer:self.layerView.layer];
+
+        if ([self.blueLayer containsPoint:point]) {
+
+        [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        }
+        else
+        {
+        [[[UIAlertView alloc] initWithTitle:@"Inside White Layer" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        }
+    }
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.10.png)
+>正确检测到图层被触碰
