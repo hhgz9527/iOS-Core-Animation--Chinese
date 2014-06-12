@@ -59,3 +59,26 @@ CALayer没有响应链，因此它不能直接处理手势或触摸事件。但�
 ```
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.10.png)
 >正确检测到图层被触碰
+
+```-hitTest:```方法也采用```CGPoint```;同时也可以用```BOOL```替换，它们返回图层自身或者最内层的子图层包含的点。当使用```-containsPoint:```方法时，你不需要依次对每个子图层转换和测试点，如果点在最外边的图层边界之外，则返回```nil```.示例 3.5展示了使用```-hitTest:```方法检测触碰图层的代码。
+
+**示例 3.5 使用```hitTest:```检测触摸的图层**
+```
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    //get touch position
+    CGPoint point = [[touches anyObject] locationInView:self.view];
+    //get touched layer
+    CALayer *layer = [self.layerView.layer hitTest:point];
+    //get layer using hitTest
+    if (layer == self.blueLayer) {
+        [[[UIAlertView alloc] initWithTitle:@"Inside Blue Layer" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+    else if (layer == self.layerView.layer) {
+        [[[UIAlertView alloc] initWithTitle:@"Inside White Layer" message:nil￼ delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+}
+```
+
+你需要注意的是，调用图层的```-hitTest:```方法（注意，这里同样适用于UIView触摸手势），检测顺序是严格遵守图层在图层树的顺序。之前提到```zPostition```属性能够影响屏幕上*表面*图层的顺序，但是不能影响处理触摸情况的顺序。
+
+这意味着如果你改变图层的z轴顺序，你可能会发现无法在frontmost图层上触摸，因为它被另外一个图层```zPosition```较小的阻塞，但它却在图层树的前面。有关更详细的问题解答将在第五章为你带来。
