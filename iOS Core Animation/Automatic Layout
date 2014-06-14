@@ -1,2 +1,6 @@
-# Automatic Layout
-35
+#自动布局
+当子视图改变尺寸时你也许尝试使用```UIViewAutoreizingMask```来控制```UIView frame```的更新（通常用在屏幕横向或纵向的选择）。
+
+在iOS 6中，苹果公司推出了*自动布局*机制。它的工作与autoresizing mask相比更复杂，通过指定的*约束*结合起来形成一个线性方程组和不等式定义视图的位置和大小。
+
+在Mac OS中，CALayer有一个属性叫做```layoutManager```，能够使你利用自动布局机制，使用```CALayoutManager```非正式协议属性和```CAConstraintLayoutManager```类。因为一些理由，这些不能用在iOS上。
