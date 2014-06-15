@@ -1,2 +1,7 @@
-# Implicit Animations
-7
+# 默认动画
+
+>做我所想，而非我说
+
+>Edna Krabappel, *辛普森一家*
+
+第一部分讲了除了动画外Core Animation能做的，动画是Core Animation框架很重要的一部分，在这一章，我们将看看它是如何工作的。我们将探索默认动画，Core Animation框架默认自动执行的效果(如果你没有明确设置的话)

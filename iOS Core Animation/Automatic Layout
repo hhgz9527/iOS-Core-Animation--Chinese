@@ -4,3 +4,12 @@
 在iOS 6中，苹果公司推出了*自动布局*机制。它的工作与autoresizing mask相比更复杂，通过指定的*约束*结合起来形成一个线性方程组和不等式定义视图的位置和大小。
 
 在Mac OS中，CALayer有一个属性叫做```layoutManager```，能够使你利用自动布局机制，使用```CALayoutManager```非正式协议属性和```CAConstraintLayoutManager```类。因为一些理由，这些不能用在iOS上。
+
+当你使用内置图层视图时，你能使用```UIView```类的外部接口```UIViewAutoresizingMask```和```NSLayoutConstraint```。但如果你想管理```CALayer```的布局，你则需要手动控制它。最简单的方法是使用```CALayerDelegate:```的一个方法：
+```
+- (void)layoutSublayersOfLayer:(CALayer *)layer;
+```
+这个方法会在图层的```bounds```改变或者```-setNeedsLayout```方法被调用时，能够自动执行。它给你在子图层编程中提供了重新定位和调整大小的机会，但是并没有提供屏幕翻转后像```UIViewautoresizingMask```和```constraints```这样的属性，来保持层对齐的默认行为。
+
+构建你的接口尽可能使用视图,而不是使用承载层，这是另一个好的理由。
+

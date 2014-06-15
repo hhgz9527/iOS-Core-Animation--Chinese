@@ -15,7 +15,7 @@
    * [坐标系](Coordinate Systems)
    * [触碰检测](Hit Testing)
    * [自动布局](Automatic Layout)
-   * [Summary](Summary3)
+   * [总结](Summary3)
 * [Visual Effects](Visual Effects)
    * [Rounded Corners](Rounded Corners)
    * [Layer Borders](Layer Borders)

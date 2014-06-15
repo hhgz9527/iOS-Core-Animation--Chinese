@@ -1,2 +1,16 @@
-# Layout
-31
+#布局
+UIview有三个主要的布局属性：frame，bounds和center。CALayer也有三个，叫做：frame，bounds和position。为什么图层使用“position”而视图使用不同的“center”这并不重要它们都代表相同的值。
+
+frame代表图层的*边缘*坐标（也就说，它占据了子图层的空间），bounds属性代表着*内部*坐标（{0,0}通常为图层左上角，尽管不是所有都如此），center和position都代表着子图层anchorPoint的位置。anchorPoint属性后面在解释，现在你可以理解它是图层的中心。图3.1展示了这些属性。
+
+视图的frame、bounds和center属性实际上只是图层下面相同的*访问器*（setter和getter方法）。当你操作视图的frame，你真正改变的是CALayer下面的frame。你不能单独改变视图的frame。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.1.png)
+>UIView和CALayer坐标系统（例举一些值）
+
+frame实际上不是视图或者图层的属性；它是*虚拟*的属性，当改变任意一个属性时候，都从bounds，position和transform计算。相反地，改变frame可能一些或全部的值。
+
+当你进行形状改变工作时候，你需要记住这些，因为当图层旋转或缩放时，frame反映了总轴对齐的矩形区域被变换的图层的父类占有，这意味着frame的宽带和高度可能与bounds不匹配（见图3.2）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/3.2.png)
+>旋转之后的视图或图层的frame属性

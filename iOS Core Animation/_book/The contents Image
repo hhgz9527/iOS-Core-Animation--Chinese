@@ -1,2 +1,237 @@
-# The contents Image
-21
+#内置图像
+CALayer有一个属性叫做contents。这个属性是一个id类型，意味着它能够是任何一种对象。你可以分配任何对象给Contents属性，你的程序仍然能够正确的编译它。在工程中，如果你提供CGImage之外的图片类型，那你的图层将是空白的。
+
+contents属性接口是继承自Mac OS的Core Animation。在Mac OS上，contents是被定义为id类型，因为你能够任意分配CGImage或NSImage中的一个属性，它将自动完成工作。如果你尝试分配一个UIImage在iOS上，无论如何，你只会得到一个空白的图层。这也是出现在iOS开发中，容易混淆谁是新的Core Animation。
+
+让人头疼的不仅仅是这个。你实际上需要提供的类型是CGImageRef，这是一个指向CGImage结构的指针。UIImage有CGImage返回的底层CGImageRef属性。如果你尝试直接使用CALayer的contents属性，那它是不会编译的，因为CGImageRef实际上不是Cocoa对象，它是一个Core Foundation类型。
+
+尽管核心框架类型在执行起来都像Cocoa对象（了解*toll-free bridging*），如果你不使用*bridged cast*他们就不能兼容id类型。在分配一个图片图层时候，你通常需要按照这样来写：
+```
+layer.contents = (__bridge id)imgage.CGImage;
+```
+如果你不使用ARC（Autimatic Reference Counting），那么你就不用写__bridge，但是*你为什么不使用ARC呢？！*
+
+让我们修改下在第一章中创建的工程，然后在背景中显示一个图片。我们不需要额外的承载层去证实已经可以通过图层的方式来实现，因此，我们直接设置一个图片在layerView的背景层contents中。
+
+示例 2.1 更新了代码。图 2.1 展示了结果。
+
+**示例 2.1 设置一个CGImgae在图层的contents中**
+```
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load an image
+    UIImage *image = [UIImage imageNamed:@"Snowman.png"];
+    //add it directly to our view's layer
+    self.layerView.layer.contents = (__bridge id)image.CGImage;
+    }
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.1.png)
+**图 2.1 一个UIView的背景层中包含着一张图片**
+
+这只是一些简单的代码，但所做让我们感到一些有趣的地方：使用CALayer功能，我们能在一个普通的UIView中显示一张图片。这不是UIImageView；它也不是正常显示图片的方法。直接操作这个图层，我们了解到新的功能和使我们简陋的UIView更加有趣。
+
+### contentsGravity
+你也许看到我们的雪人有点...胖。我们加载的这个图片并不是正方形，但是它自动调整以适应这个视图。你大概在UIImageView上也见过类似的情况，解决这个的问题就是设置这个视图的contentMode属性，像这样：
+```
+view.contentMode = UIViewContentModeScaleAspectFit;
+```
+在这里是最好的方法（尝试着做它），但大多数的视觉属性UIView，例如contentMode实际只负责底层的等效性。
+
+等效性是通过CALayer调用contentsGravity和一个NSString的enum像UIKit相似。contentsGravity设置为下列这些常量值：
+```
+kCAGravityCenter
+kCAGravityTop
+kCAGravityBottom
+kCAGravityLeft
+kCAGravityRight
+kCAGravityTopLeft
+kCAGravityTopRight
+kCAGravityBottomLeft
+kCAGravityBottomRight
+kCAGravityResize
+kCAGravityResizeAspect
+kCAGravityResizeAspectFill
+```
+contentGravity类似于contentMode，它的目的是确定应该如何对齐内容的图层边界，我们使用的kCAGravityResizeAspect相当于UIViewContentModeScaleAspectFit，使图像的缩放适应图层边界，不造成扭曲现象：
+```
+self.layerView.layer.layer.contentsGravity = kCAGravityResizeAspect;
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.2.png)
+>雪人图片的显示，正确为contentsGravity
+
+###contentsScale
+contentsScale属性定义了一个比例支持图层的像素尺寸和视图的大小。这是一个浮点值,默认为1.0。
+contentsScale属性并不是直观的。它不能一直影响屏幕上的背景图片的缩放比例；如果你尝试设置各种不同的值在我们的雪人例子上，你会发现没有发生任何变化，因为contents中的图片已经被contentsGravity属性缩放为适合图层尺寸的大小了。
+
+如果你想简单的变焦图层的contents图片，你能使用图层的transform或者affineTransform属性（见第五章，“Transforms”，变形说明），但是它的目的不是contentsScale。
+
+contentsScale属性实际上部分机制是支持高分辨率（*a.k.a. Hi-DPI or Retina*）的屏幕上的。它使用目的是内置图片的尺寸是根据图层自动创建绘制的，和contents内的图片缩放显示的规模（假设它没有被contentsGravity设置）。UIView拥有十分相似的属性叫做contentScaleFactor。
+
+如果你设置contentsScale为1.0，那么绘制出来的分辨率是每一个点一个像素，如果你设置为2.0，那么每个点将是两个像素，这是a.k.a.视网膜分辨率。（如果你不理解什么是像素和点，在接下来的章节中我们会讲到。）
+
+实际上这并不是使用kCAGravityResizeAspect产生的差异，因为它是在不考虑分辨率的情况下，缩放图片来适合这个图层。但是如果我们选择contentsGravity的kCAGravityCenter来代替（他们都不能缩放图片），正如看上去的不同（见图 2.3）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.3.png)
+>视网膜图像显示默认contentsScale是错误的
+
+正如你所见，我们的雪人十分巨大和像素化的。这是因为CGImage（不像UIImage）是没有内部的缩放概念。当我们使用
+UIImage类加载我们的雪人图片时，它能够正确加载高分辨率的样子，在转换过程中，比例将失去正确的。我们能够通过手动的方法设置contentsScale适配于我们的UIImage scale属性（见示例 2.2）。图 2.4 为展示的结果。
+```
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load an image
+    UIImage *image = [UIImage imageNamed:@"Snowman.png"]; //add it directly to our view's layer
+    self.layerView.layer.contents = (__bridge id)image.CGImage; //center the image
+    self.layerView.layer.contentsGravity = kCAGravityCenter;
+    //set the contentsScale to match image
+    self.layerView.layer.contentsScale = image.scale;
+}
+@end
+```
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.4.png)
+>使用正确的contentsScale视网膜图像显示相同
+
+当你通过编写代码生成内置图片时候，你通常需要记得手动去设置图层的contentsScale来适配屏幕比例；另外，你的图片在视网膜是被上呈现像素状。你应该像这样处理它：
+```
+layer.contentsScale = [UIScreen mainScreen].scale;
+```
+
+###masksToBounds
+现在我们的雪人已经显示正确的尺寸了，你也许注意到一些部分已经超出了视图的边界。默认情况下，UIView可能会让绘制的内容和子视图在指定的界限之外。CALayer也是如此。
+
+UIView上有个属性叫做clipsToBounds，它能够启用或禁止裁剪（用来控制是否允许视图的内容超过它的框架）。CALayer也有一个类似的属性叫做masksToBounds，设置这个属性为YES，我们就能够看到雪人被限制在视图内（如图 2.5）。
+
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.5.png)
+>使用masksToBounds裁剪图层的内容
+
+###contentsRect
+CALayer的contentsRect属性允许我们将内置图片正确的显示在图层框架内。它允许图片的缩减和拉伸比contentsGravity属性更加灵活。
+
+contentsRect与bounds和frame不同，它不能测量出点的位置；它使用*单位坐标*。单位坐标是在0到1之间，是*相对
+的值*（不是点和像素那种绝对值）。在这种情况下，他们相对内置图片的大小。以下类型的坐标用于iOS：
+
+-   **Points（点）** ---- 在Mac OS和iOS中一般都会使用这种坐标类型。点是虚拟像素的，并且了解*逻辑*像素。在标准设备上，1个点相当于1个像素，但是在视网膜屏幕设备上，1个点相当于2 x 2的物理像素。iOS在屏幕上通过点坐标来确定尺寸，保证图层在视网膜屏幕和非视网膜屏幕下无差别。
+-   **Pixels（像素）** ---- 物理像素坐标不用于屏幕布局，但他们仍然处理相关图片。UIImage是屏幕分辨率知道，指定大小的点，但是一些低级图像例如CGImage使用像素尺寸，因此你应该记住，他们的尺寸无法适用于视网膜设备。
+-   **Unit（单位）** ---- 单位坐标是一种简单的方法用来测量指定图像或者图层范围的尺寸，如果尺寸大小变化则不需要去调整。单位坐标大量使用了OpenGL的结构坐标，也多次使用在Core Animation中。
+
+contentsRect默认为{0，0，1，1}，这意味着支持整个图像是可见的。如果我们指定一小部分矩形，则会裁剪成如图2.6的样子。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.6.png)
+>左侧为自定义contentsRect，右侧则是裁剪后的显示内容。
+
+它实际上可以指定一个contentsRect具有负原点或尺寸大于{1，1}。在这种情况下，图像的最外面的像素将被拉伸以填满剩余的区域。
+
+contentsRect最有趣的使用是它能够使用所谓的*图像的精灵*。如果你编写过一些游戏程序，那么你应该很熟悉精灵这个概念，它能够使图片单独的在屏幕上移动。但是在游戏世界之外，它通常用来使用图像的子画面的加载，然后使它运动起来。
+
+具有代表性的是，许多精灵都是包含在一张大的图像中。这种方式有许多好处，在内存使用，加载时间和渲染性能上超过使用多个单独的图像文件。
+
+精灵通常出现在2D游戏引擎中，如Cocos2D，使用OpenGL展示图片。但是，我们可以利用contentsRect在一个普通的UIKit的应用程序中使用的精灵。
+
+在开始之前，我们需要一个*精灵模板*----一个巨大的图像中包含一些小的精灵图像。如图2.7所展示的精灵模板。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.7.png)
+>精灵模板
+
+接下来，我们需要加载这些图片显示在我们的app中。原理非常简单：我们加载这张大图片，将内容分为四个部分（每个即是一个精灵），然后设置contentsRect屏蔽我们不想要的部分。
+
+我们需要在工程中为精灵图层添加一些额外的视图。（最好使用xib来完成这个工作，避免使用繁杂的代码，如果你愿意的话，依然可以用代码来创建）。示例2.3为示例代码，图2.8为最终输出结果。
+
+**通过设置contentsRect来完成精灵模板**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *coneView;
+@property (nonatomic, weak) IBOutlet UIView *shipView;
+@property (nonatomic, weak) IBOutlet UIView *iglooView;
+@property (nonatomic, weak) IBOutlet UIView *anchorView;
+
+@end
+
+@implementation ViewController
+
+- (void)addSpriteImage:(UIImage *)image withContentRect:(CGRect)rect
+￼toLayer:(CALayer *)layer //set image
+{
+    layer.contents = (__bridge id)image.CGImage;
+    //scale contents to fit
+    layer.contentsGravity = kCAGravityResizeAspect;
+    //set contentsRect
+    layer.contentsRect = rect;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //load sprite sheet
+    UIImage *image = [UIImage imageNamed:@"Sprites.png"];
+    //set igloo sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0, 0, 0.5, 0.5)
+toLayer:self.iglooView.layer];
+    //set cone sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0.5, 0, 0.5, 0.5)
+toLayer:self.coneView.layer];
+    //set anchor sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0, 0.5, 0.5, 0.5)
+toLayer:self.anchorView.layer];
+    //set spaceship sprite
+    [self addSpriteImage:image withContentRect:CGRectMake(0.5, 0.5, 0.5, 0.5)
+toLayer:self.shipView.layer];
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.8.png)
+>4个精灵随机摆放在屏幕上
+
+现有的模板上创建新的精灵或需要改变尺寸大小。
+
+在Mac上几个商业应用程序都是利用精灵模板自动创建。这些工具简化了精灵的使用，通过XML或者属性列表（Plist）文件包含精灵的坐标。这个文件可以加载图像和用于设置contentsRect剪切每一个精灵，而开发人员不必手动编写坐标代码到应用程序中。
+
+这个文件通常计划使用在OpenGL游戏中，如果你对使用精灵模板感兴趣的话，你可以打开[LayerSprites](https://github.com/nicklockwood/LayerSprites)目录浏览相关资料，能够查阅到精灵模板在Cocos2D中的格式和普通的Core Animation显示。
+
+###contentsCenter
+
+这是本章中最后一个与contents有关的属性----contentsCenter。你也许会通过contentsCenter名字认为它是图片内容的中心点，但这是错误的。contentsCenter实际上是CGRect定义的可拉伸图层和边缘范围的。改变contentsCenter并没有影响图片的显示，直到修改图层的大小后，它的功能才显示出来。
+
+默认的contentsCenter是{0，0，1，1}，这意味着当图片调整大小时候，被拉伸是均匀的（依赖于contentsGravity）。但如果我们增加原点值和减少尺寸，我们可以创建一个边框包围图像。如图2.9所展示的，通过设置contentsCenter值为{0.25，0.25，0.5，0.5}来完成缩放工作。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.9.png)
+>示例为一个contentsCenter矩形，影响着上面的图像。
+
+这意味着我们可以随意调整视图的边界保证始终一致（见图 2.10）。它的功能有点类似UIImage的-resizableImageWithCapInsets:方法，但是能用于任何图层的内置图像，包括一个在执行时绘制使用的Core Graphics（将在本章后面讲到）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.10.png)
+>两个视图都使用可伸缩的内置图像
+
+示例2.4展示了如何通过代码来完成改变视图拉抻的工程。然而，添加一个contentsCenter特征可以在xib中不编写任何代码来完成拉伸图像的工作，我们可以看图2.11中Insperctor窗口。
+
+**示例 2.4 通过设置contentsCenter拉伸图像**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *button1;
+@property (nonatomic, weak) IBOutlet UIView *button2;
+
+@end
+
+@implementation ViewController
+
+- (void)addStretchableImage:(UIImage *)image withContentCenter:(CGRect)rect toLayer:(CALayer *)layer{
+    layer.contents = (__bridge id)image.CGImage;
+    //set contentsCenter
+    layer.contentsCenter = rect;
+}
+- (void)viewDidLoad {
+    [super viewDidLoad]; //load button image
+    UIImage *image = [UIImage imageNamed:@"Button.png"];
+    //set button 1
+    [self addStretchableImage:image withContentCenter:CGRectMake(0.25, 0.25, 0.5, 0.5)
+toLayer:self.button1.layer];
+    //set button 2
+    [self addStretchableImage:image withContentCenter:CGRectMake(0.25, 0.25, 0.5, 0.5)
+}
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/2.11.png)
+>在Inspector中设置contentsCenter
