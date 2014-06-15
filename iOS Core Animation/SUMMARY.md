@@ -16,7 +16,7 @@
    * [触碰检测](Hit Testing)
    * [自动布局](Automatic Layout)
    * [总结](Summary3)
-* [Visual Effects](Visual Effects)
+* [视觉效果](Visual Effects)
    * [Rounded Corners](Rounded Corners)
    * [Layer Borders](Layer Borders)
    * [Drop Shadows](Drop Shadows)
