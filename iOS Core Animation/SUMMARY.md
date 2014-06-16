@@ -17,7 +17,7 @@
    * [自动布局](Automatic Layout)
    * [总结](Summary3)
 * [视觉效果](Visual Effects)
-   * [Rounded Corners](Rounded Corners)
+   * [圆角](Rounded Corners)
    * [Layer Borders](Layer Borders)
    * [Drop Shadows](Drop Shadows)
    * [Layer Masking](Layer Masking)
