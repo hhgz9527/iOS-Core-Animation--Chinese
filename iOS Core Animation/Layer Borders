@@ -1,2 +1,2 @@
-# Layer Borders
-42
+#图层边框
+```CALayer```属性中，另外两个比较有用的是```borderWidth```和```borderColor```。它们都是用来绘制图层的边缘的边框线条。这条线（被称为*stroke*）跟着图层的```bounds```，包含圆角。
