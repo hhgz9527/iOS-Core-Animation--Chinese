@@ -18,7 +18,7 @@
    * [总结](Summary3)
 * [视觉效果](Visual Effects)
    * [圆角](Rounded Corners)
-   * [Layer Borders](Layer Borders)
+   * [图层边框](Layer Borders)
    * [Drop Shadows](Drop Shadows)
    * [Layer Masking](Layer Masking)
    * [Scaling Filters](Scaling Filters)
