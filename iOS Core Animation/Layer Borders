@@ -1,2 +1,41 @@
 #图层边框
-```CALayer```属性中，另外两个比较有用的是```borderWidth```和```borderColor```。它们都是用来绘制图层的边缘的边框线条。这条线（被称为*stroke*）跟着图层的```bounds```，包含圆角。
+```CALayer```属性中，另外两个比较有用的是```borderWidth``` 和```borderColor```。它们都是用来绘制图层的边缘的边框线条。这条线（被称为*stroke*）跟着图层的```bounds```，包含圆角。
+
+```borderWidth``` 是一个浮点值类型，默认值为0（即没有边框）。```borderColor```是设置边界线条的颜色，其默认色为黑色。
+
+```borderColor``` 类型是```CGColorRef```，并不是你所想的```UIColor```，因此它本身并不是Cocoa对象。无论如何，尽管它们并没有宣传这个属性，但你应该知道图层持有```borderColor```属性。```CGColorRef```看起来拥有```NSObject```的retain、release，但是Objective-C语法中没有提高这个方法给它，因此所有持有```CGColorRef```属性的必须使用```assign```声明。
+
+边界线是在图层的边界内绘制，在图层内容的外面，包含子图层。如果我们修改示例代码，使其包含图层边界（见示例 4.2），你能够看到它是如何工作的（见图 4.3）。
+
+**示例4.2 添加边界线**
+```
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    //set the corner radius on our layers
+    self.layerView1.layer.cornerRadius = 20.0f;
+    self.layerView2.layer.cornerRadius = 20.0f;
+
+    //add a border to our layers
+    self.layerView1.layer.borderWidth = 5.0f;
+    self.layerView2.layer.borderWidth = 5.0f;
+
+    //enable clipping on the second layer
+    self.layerView2.layer.masksToBounds = YES;
+}
+
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.3.png)
+>给图层添加边界线
+
+值得注意的是，图层的边界无法判断图层内置图像或子图层是否在内。如果图层的子图层超出了```bounds```，或内置图像包含一个透明的蒙版，边界线总是按照本来的矩形（圆形）样式（见图 4.4）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.4.png)
+>边界线总是按照图层的```bounds```走
+
+
+
+

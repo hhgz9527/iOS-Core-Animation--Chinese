@@ -1,2 +1,16 @@
-# Drop Shadows
-43
+#绘制阴影
+在iOS中另外一个通用的是*绘制阴影*。绘制阴影是在视图后面的阴影深度。它们用来突出图层的存在感（例如弹出的警告在另外一个视图上），但是它们也是为了美观的作用（给一些固体的外观添加立体感）。
+
+设置给```shadowOpacity```属性一个较大的值（默认为0），能够绘制一个阴影在图层的下面。```shadowOpacity```是一个浮点型值，设置范围应该在0.0（不存在）到1.0（完全呈现）之间。将它设置为1.0，能够看到一个黑色细长的阴影出现在图层上方。出现阴影后，你能够添加额外的```CALayer```属性：```shadowColor```，```shadowOffset```和```shadowRadius```。
+
+```shadowColor```属性，它的功能正如其名称所示，控制阴影的颜色（```CGColorRef```），像```borderColor```和```backgroundColor```属性。默认的阴影颜色为黑色，```少一部分```。
+
+```shadowOffset```属性控制阴影的延展方向和距离。它是```CGSize```值，宽度控制水平阴影，高度控制垂直阴影。默认的是{0, -3}，阴影是沿着Y轴在图层的上方3点的位置。
+
+为什么阴影是朝向上方的？因为Core Animation为了Layer Kit（创建iOS的私有动画框架），它最开始是在Mac OS上的，在iOS上则变成了反方向的坐标系（Y轴开始朝上）。在Mac OS上，```shadowOffset```默认的是朝下方扩展阴影，图 4.5展示了两个系统默认的阴影方向。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.5.png)
+>左侧为iOS平台，右侧为Mac OS平台
+
+苹果公司的惯例是将阴影竖直朝下的，因此在iOS上的建议是设置宽度为0，高度设置为正数比较好。
+
