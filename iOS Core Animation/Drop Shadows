@@ -21,4 +21,16 @@
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.6.png)
 >设置阴影的方向和模糊度值越大，效果越明显
 
+###阴影裁剪
+不像图层边界，图层的阴影是根据图形的内容来产生的，不仅仅是```bounds```和```cornerRadius```。在计算形状的阴影时，Core Animation考虑内置图像（如果有任何可能，也会跟子图层一样）创建一个匹配图层形状的阴影。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.7.png)
+>阴影沿着图层内的图像
+
+当尝试将裁减的合二为一时，图层的阴影就会出现一些让人烦恼的事情：因为阴影通常绘制在图层的边界外，如果你用```masksToBounds```属性，阴影裁减会沿着另外一个图层。如果我们添加图层阴影在我们的实例工程上，你会看到存在的一些问题（见图 4.8）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.8.png)
+>```masksToBounds```属性会使阴影和内容都被裁减
+
+
 
