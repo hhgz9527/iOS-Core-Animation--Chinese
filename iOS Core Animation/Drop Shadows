@@ -1,9 +1,7 @@
 #绘制阴影
 在iOS中另外一个通用的是*绘制阴影*。绘制阴影是在视图后面的阴影深度。它们用来突出图层的存在感（例如弹出的警告在另外一个视图上），但是它们也是为了美观的作用（给一些固体的外观添加立体感）。
 
-设置给```shadowOpacity```属性一个较大的值（默认为0），能够绘制一个阴影在图层的下面。```shadowOpacity```是一个浮点型值，设置范围应该在0.0（不存在）到1.0（完全呈现）之间。将它设置为1.0，能够看到一个黑色细长的阴影出现在图层上方。出现阴影后，你能够添加额外的```CALayer```属性：```shadowColor```，```shadowOffset```和```shadowRadius```。
-
-```shadowColor```属性，它的功能正如其名称所示，控制阴影的颜色（```CGColorRef```），像```borderColor```和```backgroundColor```属性。默认的阴影颜色为黑色，```少一部分```。
+设置给```shadowOpacity```属性一个较大的值（默认为0），能够绘制一个阴影在图层的下面。```shadowOpacity```是一个浮点型值，设置范围应该在0.0（不存在）到1.0（完全呈现）之间。将它设置为1.0，能够看到一个黑色细长的阴影出现在图层上方。出现阴影后，你能够添加额外的```CALayer```属性：```shadowColor```，```shadowOffset```和```shadowRadius```。```shadowColor```属性，它的功能正如其名称所示，控制阴影的颜色（```CGColorRef```），像```borderColor```和```backgroundColor```属性。默认的阴影颜色为黑色，```少一部分```。
 
 ```shadowOffset```属性控制阴影的延展方向和距离。它是```CGSize```值，宽度控制水平阴影，高度控制垂直阴影。默认的是{0, -3}，阴影是沿着Y轴在图层的上方3点的位置。
 
@@ -14,9 +12,7 @@
 
 苹果公司的惯例是将阴影竖直朝下的，因此在iOS上的建议是设置宽度为0，高度设置为正数比较好。
 
-```shadowRadius```属性是控制阴影的模糊度。若设置值为0，那阴影的棱角分明，恰好符合视图的形状。若设置的值较大，那么阴影较为模糊。苹果公司自己的应用程序设计都使用比较模糊的阴影，因此最好的方案是将这个值设置较大。
-
-通常来讲，大多数时间你应该使用```shadowRadius```来控制视图在背景上较为突出；更模糊的阴影，会有更深的模糊视觉效果（见图 4.6）。
+```shadowRadius```属性是控制阴影的模糊度。若设置值为0，那阴影的棱角分明，恰好符合视图的形状。若设置的值较大，那么阴影较为模糊。苹果公司自己的应用程序设计都使用比较模糊的阴影，因此最好的方案是将这个值设置较大。            通常来讲，大多数时间你应该使用```shadowRadius```来控制视图在背景上较为突出；更模糊的阴影，会有更深的模糊视觉效果（见图 4.6）。
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.6.png)
 >设置阴影的方向和模糊度值越大，效果越明显
@@ -32,5 +28,53 @@
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.8.png)
 >```masksToBounds```属性会使阴影和内容都被裁减
 
+从技术角度来看这种行为是容易理解的，但是它不大可能影响你的结果。如果你想裁剪内容和阴影，你需要使用两个图层：一个在外部的空白图层用来绘制阴影，一个在里面通过```maskToBounds```裁剪内容。
 
+如果我们使用额外的视图涵盖裁剪的视图，右侧为更新后的工程，我们便能够解决这个问题（如图 4.9）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.9.png)
+>右侧为一个额外的阴影模型视图包裹着裁剪的视图。
+
+我们只在最外边的视图上附件阴影，使裁剪只作用于内部的视图。示例 4.3为更新后的代码，图 4.10为最终效果。
+
+**示例 4.3 使用额外的视图解决裁剪阴影问题**
+
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *layerView1;
+@property (nonatomic, weak) IBOutlet UIView *layerView2;
+@property (nonatomic, weak) IBOutlet UIView *shadowView;
+
+@end
+
+@implementation ViewController
+
+-(void)viewDidLoad {
+    [super viewDidLoad];
+
+    //set the corner radius on our layers
+    self.layerView1.layer.cornerRadius = 20.0f;
+    self.layerView2.layer.cornerRadius = 20.0f;
+
+    //add a border to our layers
+    self.layerView1.layer.borderWidth = 5.0f;
+    self.layerView2.layer.borderWidth = 5.0f;
+
+    //add a shadow to layerView1
+    self.layerView1.layer.shadowOpacity = 0.5f;
+    self.layerView1.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
+    self.layerView1.layer.shadowRadius = 5.0f;
+
+    //add same shadow to shadowView (not layerView2)
+    self.shadowView.layer.shadowOpacity = 0.5f;
+    self.shadowView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
+    self.shadowView.layer.shadowRadius = 5.0f;
+
+    //enable clipping on the second layer
+    self.layerView2.layer.masksToBounds = YES;
+}
+
+@end
+```
 
