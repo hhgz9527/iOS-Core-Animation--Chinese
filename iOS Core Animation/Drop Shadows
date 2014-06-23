@@ -77,4 +77,46 @@
 
 @end
 ```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.10.png)
+>尽管裁剪，右侧的视图始终有阴影
 
+###shadowPath 属性
+
+我们已经了解图层的阴影不总是矩形，而是来自内容的形状。这看起来不错，但它也非常消耗时间，尤其图层内包含多个子图层，每个内置图像都是透明蒙版。
+
+如果你预先知道形状的阴影样子，你能够使用```shadowPath```属性提高性能。```shadowPath```是```CGPathRef```（每个点是CGPath对象）。```CGPath```是一个Core Graphics常常用于指定任意矢量形状。我们能够使用这个制作图层形状的阴影，使其独立出来。
+
+图 4.11展示两个不同的阴影形状在图层图像上。在这里，我们使用简单形状，但是它们能够是任意的形状。示例 4.4为具体代码。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.11.png)
+>使用```shadowPath```制作任意形状的阴影
+
+**示例 4.4 创建一个简单地阴影**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *layerView1;
+@property (nonatomic, weak) IBOutlet UIView *layerView2;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //enable layer shadows
+    self.layerView1.layer.shadowOpacity = 0.5f;
+    self.layerView2.layer.shadowOpacity = 0.5f;
+    //create a square shadow
+    CGMutablePathRef squarePath = CGPathCreateMutable();
+    CGPathAddRect(squarePath, NULL, self.layerView1.bounds);
+    self.layerView1.layer.shadowPath = squarePath;
+    CGPathRelease(squarePath);
+    ￼//create a circular shadow
+    CGMutablePathRef circlePath = CGPathCreateMutable();
+    CGPathAddEllipseInRect(circlePath, NULL, self.layerView2.bounds);
+    self.layerView2.layer.shadowPath = circlePath; CGPathRelease(circlePath);
+}
+
+@end
+```
