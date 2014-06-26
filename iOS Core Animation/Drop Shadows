@@ -120,3 +120,5 @@
 
 @end
 ```
+
+像矩形或者圆形，手动创建一个```CGPath```笔直向前。圆角矩形这样复杂的现状，你也许会需要使用```UIBezierPath```类，它是在UIKit中Objective-C封装的```CGPath```。

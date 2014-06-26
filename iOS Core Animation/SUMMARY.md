@@ -20,7 +20,7 @@
    * [圆角](Rounded Corners)
    * [图层边框](Layer Borders)
    * [绘制阴影](Drop Shadows)
-   * [Layer Masking](Layer Masking)
+   * [图层蒙版](Layer Masking)
    * [Scaling Filters](Scaling Filters)
    * [Group Opacity](Group Opacity)
    * [Summary](Summary4)
