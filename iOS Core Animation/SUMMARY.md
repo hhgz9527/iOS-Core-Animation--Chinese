@@ -21,7 +21,7 @@
    * [图层边框](Layer Borders)
    * [绘制阴影](Drop Shadows)
    * [图层蒙版](Layer Masking)
-   * [Scaling Filters](Scaling Filters)
+   * [缩放滤镜](Scaling Filters)
    * [Group Opacity](Group Opacity)
    * [Summary](Summary4)
 * [Transforms](Transforms)
