@@ -29,3 +29,10 @@ kCAFilterTrilinear
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.15.png)
 >小图像没有对角线，则邻近过滤较好
+
+通常来讲，非常小的图像或者大的图像形状对比对角线（例如，计算机生成图像），邻近缩放将保证效果最好的结果。但大部分图像，特别是照片或图像与对角线或曲线，邻近看起来比线性过滤更差劲。换一种方式，线性过滤保存的是*形状*，邻近过滤保存的*像素*。
+
+让我们来尝试一个真实的例子，我们将改变第三章闹钟工程的表面，用LCD样式的数字来代替。这些数字将使用简单的*像素字体*（每个数字都是由像素组成，而不是矢量图形）来创建，这里又会用到第二章讲到的精灵模板来保存这些数字（见图 4.16）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.16.png)
+>LCD样式数字出现在一个简单的精灵模板上
