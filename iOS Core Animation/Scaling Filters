@@ -36,3 +36,68 @@ kCAFilterTrilinear
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.16.png)
 >LCD样式数字出现在一个简单的精灵模板上
+
+在视图构建器上排列这6个视图，小时、分钟和秒钟都有两个视图，如图4.17排列的样式。视图较多的话，单独连接每个较为麻烦，因此我们将连接这些使用`IBOutletCollection`，允许我们使用数组来连接视图。示例 4.6展示了闹钟的代码。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.17.png)
+>闹钟的小时、分钟和秒钟的数字视图排列
+
+**展示LCD样式闹钟**
+```
+@interface ViewController ()
+
+@property (nonatomic, strong) IBOutletCollection(UIView) NSArray *digitViews;
+@property (nonatomic, weak) NSTimer *timer;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    //get spritesheet image
+    UIImage *digits = [UIImage imageNamed:@"Digits.png"];
+
+    //set up digit views
+    for (UIView *view in self.digitViews) {
+        //set contents
+        view.layer.contents = (__bridge id)digits.CGImage;
+        view.layer.contentsRect = CGRectMake(0, 0, 0.1, 1.0);
+        view.layer.contentsGravity = kCAGravityResizeAspect;
+    }
+
+    //start timer
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
+
+    //set initial clock time
+    [self tick];
+}
+
+- (void)setDigit:(NSInteger)digit forView:(UIView *)view {
+    //adjust contentsRect to select correct digit
+    view.layer.contentsRect = CGRectMake(digit * 0.1, 0, 0.1, 1.0);
+}
+
+- (void)tick {
+    //convert time to hours, minutes and seconds
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier: NSGregorianCalendar];
+    NSUInteger units = NSHourCalendarUnit | NSMinuteCalendarUnit |
+NSSecondCalendarUnit;
+    NSDateComponents *components = [calendar components:units fromDate:[NSDate date]];
+
+    //set hours
+    [self setDigit:components.hour / 10 forView:self.digitViews[0]];
+    [self setDigit:components.hour % 10 forView:self.digitViews[1]];
+
+    //set minutes
+    [self setDigit:components.minute / 10 forView:self.digitViews[2]];
+    [self setDigit:components.minute % 10 forView:self.digitViews[3]];
+
+    //set seconds
+    [self setDigit:components.second / 10 forView:self.digitViews[4]];
+    [self setDigit:components.second % 10 forView:self.digitViews[5]];
+}
+@end
+
+```
