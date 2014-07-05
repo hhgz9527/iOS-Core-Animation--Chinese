@@ -99,5 +99,16 @@ NSSecondCalendarUnit;
     [self setDigit:components.second % 10 forView:self.digitViews[5]];
 }
 @end
-
 ```
+如你所见，运行后的样子就是图 4.18，但是数字看起来非常模糊。它似乎是默认的`kCAFilterLinear`选项有误。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.18.png)
+>闹钟看起来很模糊，因为`kCAFilterLinear`默认的缩放尺寸
+
+我们需要添加一行代码在for...in循环中：
+```
+view.layer.magnificationFilter = kCAFilterNearest;
+```
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.19.png)
+>使用了邻近缩放后，数字变得清晰了
