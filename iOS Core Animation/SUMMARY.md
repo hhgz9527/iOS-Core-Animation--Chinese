@@ -25,7 +25,7 @@
    * [合并不透明](Group Opacity)
    * [总结](Summary4)
 * [图层变形](Transforms)
-   * [Affine Transforms](Affine Transforms)
+   * [仿射变形](Affine Transforms)
    * [3D Transforms](3D Transforms)
    * [Solid Objects](Solid Objects)
    * [Summary](Summary5)
