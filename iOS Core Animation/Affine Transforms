@@ -2,6 +2,9 @@
 
 在第三章“几何图层”中，我们使用了`UIViewtransform`属性来制作闹钟上旋转的指针，但实际上我们没有去解释背后的机制。`UIViewtransform`属性是属于`CGAffineTransform`，用于表示二维的旋转，缩放和变形。`CGAffineTransform`是一个2列3行的矩阵在乘以2D的列向量（此情况为一个CGPoint）去改变它的值（见图 5.1）。
 
+这个乘积的结果是每个纵列`CGPoint`矢量，它们的乘积的值是每一行`CGAffineTransform`矩阵，它们结果的和将创造一个新的`CGPoint`。这就解释了灰色在图中所示的额外的值；在矩阵的乘积工作中，左边的矩阵的列与右侧的行必须有相同数量，所以我们不得不填补矩阵相同的值数字来完成工作，但不会改变最终结果。实际上我们不需要存储那些额外的值，因为它们从不改变，但它们需要计算。
+
+
 
 
 ![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/5.1.png)
