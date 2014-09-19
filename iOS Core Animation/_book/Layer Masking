@@ -1,2 +1,50 @@
-# Layer Masking
-44
+#图层蒙版
+使用```masksToBounds```属性，我们了解它能根据图层的内容边界来裁剪，以及使用```cornerRadius```，制作出一个圆角。但是一些情况下，你不想要矩形或者圆角矩形。例如，你想创建一个星星图案包裹着照片，或者想要一个滚动的文本优雅的消失在背景中而不是突然的消失。
+
+使用32位的PNG图像且有alpha组件，通常用简单的方法来创建非矩形的视图，为指定一个内置图像中的alpha蒙版。但这个方法不允许你使用程序动态裁剪图像生成蒙版、子图层或者子图层裁剪的任意形状。
+
+`CALayer
+`属性可以调用```mask```来解决这个问题。它自身是```CALayer```和拥有绘制以及其他图层的布局属性。它以类似的方式使用它的子层，它的位置相对于其父图层（图层本身拥有），但是它表现的不像一个正常的子图层。反而在父图层中绘制，```mask```图层定义一部分父图层是可见的。
+
+```mask```的蒙版颜色是无关紧要的；只是用到了它的影子。它看起来就像一个制作饼干样式的模具；```mask```蒙版的一部分将剪去其父图层和保存；其他多余都被丢弃（见图 4.12）。
+
+如果`mask`图层是小于父图层，仅仅是父图层的一部分（或者就是子图层）相交的部分蒙版是可见的。如果你使用`mask`图层，一些之外的图层是隐藏的。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.12.png)
+>将分开的图像组合起来创建一个蒙版图像
+
+如上面展示的，我们创建一个简单的工程，制作一个图形使用在另外一个的图层`mask`属性上。我们将使用`UIImageView`在视图构建器上创建一个图像图层，`mask`图层仅需要通过代码来创建和应用即可。示例 4.5展示了代码，图 4.13展示了最终结果。
+
+**示例 4.5 图层蒙版**
+
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+
+@end
+
+@implementation ViewController
+- (void)viewDidLoad {
+
+    [super viewDidLoad];
+
+    //create mask layer
+    CALayer *maskLayer = [CALayer layer];
+    maskLayer.frame = self.layerView.bounds;
+    UIImage *maskImage = [UIImage imageNamed:@"Cone.png"];
+    maskLayer.contents = (__bridge id)maskImage.CGImage;
+
+    //apply mask to image layer
+    self.imageView.layer.mask = maskLayer;
+}
+
+@end
+```
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.13.png)
+>使用`mask`图层后的`UIImageView`图像
+
+`CALayer`的蒙版是可以让你无限的使用静态图像制作的，这个功能非常酷。由图层组成的任何都能够使用`mask`属性，你可以使用代码灵活的创建以及同时应用在动画中。
+
+
+

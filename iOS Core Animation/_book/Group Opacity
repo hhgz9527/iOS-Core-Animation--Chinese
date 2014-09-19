@@ -1,2 +1,73 @@
-# Group Opacity
-46
+#合并不透明
+
+`UIView`有一个`alpha`属性，使用它能够改变透明度。`CALayer`拥有一个相同功能的属性叫做`opacity`。如果你给图层设置`opacity`属性，那么也将影响到它的子图层。
+
+在iOS中常用的技巧是设置`alpha`为0.5（50%）来作为效果。这非常适合单个视图，但是当有子视图时，它看起来就有些奇怪。如图 4.20展示的自定义`UIButton`中嵌套着一个`UILabel`；左侧是一个不透明按钮，右侧是透明度50%的按钮。值得注意的是，右侧的按钮中我们能够看到标签的轮廓。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.20.png)
+>右侧的按钮中，标签的轮廓能够清晰可见
+
+这样子的结果是由于透明度混合方法。当你设置一个图层不透明度为50%时候，图层上所有像素的颜色和它的图层也将为50%。这个结果在半透明的外表上。如果图层包含的子图层也为50%透明度，当你看后面的子图层，你会看到子图层的颜色只有50%，还带有25%的图层颜色和25%的背景色。
+
+在我们的示例中，按钮和标签都有一个白色的背景。虽然他们都只有50%不透明，但它们合在一起透明度就变成75%了，因此按钮和标签的重叠部分看起来就比周围的透明度更高些。高亮的部分是子图层组成为一个过程中会产生较差的效果。
+
+我们希望，给图层设置`opacity`属性，会将它的整个subtree视为一个图层，不会有内部结构。有两个方法来实现这个想法：
+
+一、你可以在`Info.plist`文件中设置`UIViewGroupOpacity`为`YES`来实现这个这个，但它也会影响整个应用，触发小的app-wide性能影响。因为在iOS6和之前的系统中不存在`UIViewGroupOpacity`，它的值是默认为`NO`的。
+
+二、使用`CALayer`属性调用`shouldRasterize`来实现图层subtree整合为一个组（见示例代码 4.7）。当你设置它为`YES`，那么改变不透明度之前会引起图层和它的子图层合并为一个扁平的图像，从而解决混合在一起的故障（见图 4.21）.
+
+除了设置`shouldRasterize`属性，我们还需要改变图层的`rasterizationScale`属性。默认地，所有图层栅格化比例为1.0，因此你若使用`shouldRasterize`属性，你应该一直保证`rasterizationScale`匹配屏幕，避免在视网膜屏幕上造成像素化。
+
+与`UIViewGroupOpacity`一样，使用`shouldRasterize`属性会影响性能（在第12章和第15章我们会解释），但影响不是很大。
+
+**示例 4.7 使用`shouldRasterize`修改混合问题**
+```
+@interface ViewController ()
+
+@property (nonatomic, weak) IBOutlet UIView *containerView;
+
+@end
+
+@implementation ViewController
+
+- (UIButton *)customButton {
+    //create button
+    CGRect frame = CGRectMake(0, 0, 150, 50);
+    UIButton *button = [[UIButton alloc] initWithFrame:frame];
+    button.backgroundColor = [UIColor whiteColor]; button.layer.cornerRadius = 10;
+
+    //add label
+    frame = CGRectMake(20, 10, 110, 30);
+    UILabel *label = [[UILabel alloc] initWithFrame:frame];
+    label.text = @"Hello World";
+    label.textAlignment = NSTextAlignmentCenter;
+    [button addSubview:label];
+    return button;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    //create opaque button
+    UIButton *button1 = [self customButton];
+    button1.center = CGPointMake(50, 150);
+    [self.containerView addSubview:button1];
+
+    //create translucent button
+    UIButton *button2 = [self customButton];
+    button2.center = CGPointMake(250, 150);
+    button2.alpha = 0.5;
+    [self.containerView addSubview:button2];
+
+    //enable rasterization for the translucent button
+    button2.layer.shouldRasterize = YES;
+    button2.layer.rasterizationScale = [UIScreen    mainScreen].scale;
+}
+
+@end
+```
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.21.png)
+>按钮内的颜色已经褪去，不在可见
+

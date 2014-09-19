@@ -1,2 +1,114 @@
-# Scaling Filters
-45
+#缩放过滤
+本章我们将讲解`minificationFilter`和`magnificationFilter`属性。通常在iOS中，当你展示一个图形时候，你应该尝试展示真实尺寸（简言之，让图像的像素在屏幕上也保持1：1的比例）。理由如下：
+- 因为像素没有被拉伸，这样能有最好的质量
+- 你不需要存储许多的像素，所以最好在内存中使用
+- 因为GPU不得不努力工作，使它得到最好的性能
+
+有时，它必须展示图像的较大或较小的尺寸。例如人们的头像使用小图片，或者用户能够自由缩放的大型图片。这种情况下，不太可能设置不同尺寸的图像用来展示。
+
+当图像展示不同尺寸时，算法（经常称它为*scaling filter*）是支持原始图像的像素生成新的像素效果展示在屏幕上。
+
+这不是一个改变图像尺寸常用的算法。这个方法依靠其本身的缩放来实现。`CALayer`提供了3种选择用来改变图像尺寸，都是用字符串常量表示：
+```
+kCAFilterLinear
+kCAFilterNearest
+kCAFilterTrilinear
+```
+默认过滤是`kCAFilterLinear`，包括*minification*（缩小图像）和*magnification*（扩大图像）。它使用的*双线性*过滤算法，大多情况下效果都非常好。双线性过滤通过多重取样像素来创建一个最终的结果。最终结果给人感觉十分平滑，如果图像放大的系数较高，将会使其较为模糊（见图 4.14）。
+
+`kCAFilterTrilinear`参数和`kCAFilterLinear`看起来十分相似。它们在大多数情况下并无明显区别，但三线过滤优于双线过滤在图像的多重尺寸和三维取样上，结合像素较大或者较小的存储图像表示创建最终结果。
+
+这个方法优点就是算法能够在一对图像中使其非常接近最后的大小。这个方法不需要许多像素同时取样，可以提高性能和改善取样时可能发生的一些小错误。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.14.png)
+>处理较大的图像，双线性或三线性都是不错的选择
+
+`kCAFilterNearest`是一个简略的方法。顾名思义，这个算法（通常称为*最邻近*过滤）取最近的一个像素和任何颜色混合。这样非常迅速，不会模糊图像，但缩小的图片质量非常差，较大的图片又会出现像素化和块状样式。
+
+在图 4.14中，注意当相邻的版本收缩到较小尺寸时候，双线性图像看起来扭曲较小，但扩大后却模糊不清。与图 4.15相比，当我们有一个非常小的图像时。这种情况下，最邻近是保持原有像素最好的方法，无论图像是放大还是缩小，线性过滤都将它们转换成模糊状。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.15.png)
+>小图像没有对角线，则邻近过滤较好
+
+通常来讲，非常小的图像或者大的图像形状对比对角线（例如，计算机生成图像），邻近缩放将保证效果最好的结果。但大部分图像，特别是照片或图像与对角线或曲线，邻近看起来比线性过滤更差劲。换一种方式，线性过滤保存的是*形状*，邻近过滤保存的*像素*。
+
+让我们来尝试一个真实的例子，我们将改变第三章闹钟工程的表面，用LCD样式的数字来代替。这些数字将使用简单的*像素字体*（每个数字都是由像素组成，而不是矢量图形）来创建，这里又会用到第二章讲到的精灵模板来保存这些数字（见图 4.16）。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.16.png)
+>LCD样式数字出现在一个简单的精灵模板上
+
+在视图构建器上排列这6个视图，小时、分钟和秒钟都有两个视图，如图4.17排列的样式。视图较多的话，单独连接每个较为麻烦，因此我们将连接这些使用`IBOutletCollection`，允许我们使用数组来连接视图。示例 4.6展示了闹钟的代码。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.17.png)
+>闹钟的小时、分钟和秒钟的数字视图排列
+
+**展示LCD样式闹钟**
+```
+@interface ViewController ()
+
+@property (nonatomic, strong) IBOutletCollection(UIView) NSArray *digitViews;
+@property (nonatomic, weak) NSTimer *timer;
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    //get spritesheet image
+    UIImage *digits = [UIImage imageNamed:@"Digits.png"];
+
+    //set up digit views
+    for (UIView *view in self.digitViews) {
+        //set contents
+        view.layer.contents = (__bridge id)digits.CGImage;
+        view.layer.contentsRect = CGRectMake(0, 0, 0.1, 1.0);
+        view.layer.contentsGravity = kCAGravityResizeAspect;
+    }
+
+    //start timer
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
+
+    //set initial clock time
+    [self tick];
+}
+
+- (void)setDigit:(NSInteger)digit forView:(UIView *)view {
+    //adjust contentsRect to select correct digit
+    view.layer.contentsRect = CGRectMake(digit * 0.1, 0, 0.1, 1.0);
+}
+
+- (void)tick {
+    //convert time to hours, minutes and seconds
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier: NSGregorianCalendar];
+    NSUInteger units = NSHourCalendarUnit | NSMinuteCalendarUnit |
+NSSecondCalendarUnit;
+    NSDateComponents *components = [calendar components:units fromDate:[NSDate date]];
+
+    //set hours
+    [self setDigit:components.hour / 10 forView:self.digitViews[0]];
+    [self setDigit:components.hour % 10 forView:self.digitViews[1]];
+
+    //set minutes
+    [self setDigit:components.minute / 10 forView:self.digitViews[2]];
+    [self setDigit:components.minute % 10 forView:self.digitViews[3]];
+
+    //set seconds
+    [self setDigit:components.second / 10 forView:self.digitViews[4]];
+    [self setDigit:components.second % 10 forView:self.digitViews[5]];
+}
+@end
+```
+如你所见，运行后的样子就是图 4.18，但是数字看起来非常模糊。它似乎是默认的`kCAFilterLinear`选项有误。
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.18.png)
+>闹钟看起来很模糊，因为`kCAFilterLinear`默认的缩放尺寸
+
+我们需要添加一行代码在for...in循环中：
+```
+view.layer.magnificationFilter = kCAFilterNearest;
+```
+
+![alt text](https://raw.githubusercontent.com/hhgz9527/qipaname/master/Resource/4.19.png)
+>使用了邻近缩放后，数字变得清晰了
